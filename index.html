@@ -252,6 +252,7 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
         <button class="unit-btn" onclick="pickUnit('רפואה','dept')"><div class="ui">⚕️</div><div class="un">רפואה</div></button>
         <button class="unit-btn" onclick="pickUnit('רבנות','dept')"><div class="ui">✡️</div><div class="un">רבנות</div></button>
         <button class="unit-btn" onclick="pickUnit('לוגיסטיקה','dept')"><div class="ui">📦</div><div class="un">לוגיסטיקה</div></button>
+        <button class="unit-btn" onclick="pickUnit('קשר','dept')"><div class="ui">📻</div><div class="un">קשר</div><div class="ud">תחת אג״מ</div></button>
       </div>
       <!-- מטה -->
       <div class="step-label" style="margin-bottom:8px">מטה ופיקוד</div>
@@ -467,7 +468,7 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
         <select class="fs" id="t-prov">
           <option value="">בחר...</option>
           <option>רכב</option><option>טנ״א</option><option>רפואה</option>
-          <option>רבנות</option><option>לוגיסטיקה</option><option>מטבח</option><option>נסיעה / הובלה</option>
+          <option>רבנות</option><option>לוגיסטיקה</option><option>מטבח</option><option>קשר</option><option>נסיעה / הובלה</option>
         </select>
         <div class="fnote">לתיקון רכב בשטח → טנ״א</div>
       </div>
@@ -804,7 +805,7 @@ function myTasks(){
   return tasks;
 }
 function deptProv(){
-  const map={'מחלקת רכב':'רכב','מחלקת טנ״א':'טנ״א','מחלקת מטבח':'מטבח','רפואה':'רפואה','רבנות':'רבנות','לוגיסטיקה':'לוגיסטיקה'};
+  const map={'מחלקת רכב':'רכב','מחלקת טנ״א':'טנ״א','מחלקת מטבח':'מטבח','רפואה':'רפואה','רבנות':'רבנות','לוגיסטיקה':'לוגיסטיקה','קשר':'קשר'};
   return map[SESSION.unit]||'';
 }
 
@@ -977,6 +978,7 @@ const INV_ACCESS = {
   'רפואה':      ['רפואה'],
   'רבנות':      ['ציוד'],
   'לוגיסטיקה':  ['ציוד','תחמושת','מזון','דלק','רפואה'],
+    'קשר':         ['ציוד'],
 };
 function myInventory(){
   if(canSeeAll()) return inventory;
@@ -1415,6 +1417,7 @@ function myAssignedVeh(){
     'רפואה':       ['רפואה'],
     'רבנות':       ['פלס״מ'],
     'לוגיסטיקה':  ['פלס״מ'],
+    'קשר':         ['פלס״מ'],
   };
   const allowed = deptMap[SESSION.unit] || [SESSION.unit];
   return vehicles.filter(v=>allowed.includes(v.unit));
