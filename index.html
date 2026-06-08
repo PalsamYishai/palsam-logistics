@@ -253,13 +253,13 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
         <button class="unit-btn" onclick="pickUnit('רבנות','dept')"><div class="ui">✡️</div><div class="un">רבנות</div></button>
         <button class="unit-btn" onclick="pickUnit('לוגיסטיקה','dept')"><div class="ui">📦</div><div class="un">לוגיסטיקה</div></button>
         <button class="unit-btn" onclick="pickUnit('קשר','dept')"><div class="ui">📻</div><div class="un">קשר</div><div class="ud">תחת אג״מ</div></button>
+        <button class="unit-btn" onclick="pickUnit('פלס״מ','palsam')" style="grid-column:span 3;border-color:rgba(232,115,64,0.3);background:rgba(232,115,64,0.06)"><div class="ui">🪖</div><div class="un">פלס״מ כללי</div></button>
       </div>
       <!-- מטה -->
       <div class="step-label" style="margin-bottom:8px">מטה ופיקוד</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
-        <button class="unit-btn" onclick="pickUnit('אג״מ','staff')"><div class="ui">📋</div><div class="un">אג״מ</div><div class="ud">ראות בלבד</div></button>
-        <button class="unit-btn" onclick="pickUnit('חמ״ל פלס״מ','hamal')"><div class="ui">📡</div><div class="un">חמ״ל</div></button>
-        <button class="unit-btn" onclick="pickUnit('קמב״ץ מטה','kamatz')" style="border-color:rgba(232,115,64,0.4);background:rgba(232,115,64,0.07)"><div class="ui">⭐</div><div class="un">קמב״ץ</div><div class="ud">גישה מלאה</div></button>
+        <button class="unit-btn" onclick="pickUnit('אג״מ','staff')"><div class="ui">📋</div><div class="un">אג״מ</div></button>
+        <button class="unit-btn" onclick="pickUnit('חמ״ל פלס״מ / קמב״ץ','kamatz')" style="grid-column:span 2;border-color:rgba(232,115,64,0.4);background:rgba(232,115,64,0.07)"><div class="ui">⭐</div><div class="un">חמ״ל פלס״מ / קמב״ץ</div><div class="ud">ראות מלאה + ניהול</div></button>
       </div>
     </div>
 
@@ -314,7 +314,10 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
         </div>
         <div class="ps" id="dash-time"></div>
       </div>
-      <button class="btn btn-s btn-xs" onclick="refreshDash()">↻</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-s btn-xs" onclick="refreshDash()">↻</button>
+        <button class="btn btn-d btn-xs" id="reset-btn" onclick="resetDemo()" style="font-size:10px;display:none">🗑️ אפס נתונים</button>
+      </div>
     </div>
     <div class="stats">
       <div class="sbox red"><div class="slabel">משימות פתוחות</div><div class="sval red" id="s-open">0</div></div>
@@ -484,7 +487,7 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="fg"><label class="fl">פלגה / יחידה</label>
         <select class="fs" id="t-unit">
           <option value="">בחר...</option>
-          <option>פלגה א׳</option><option>פלגה ב׳</option><option>פלגה ג׳</option><option>פלגה ד׳</option><option>מפקדה</option>
+          <option>פלגה א׳</option><option>פלגה ב׳</option><option>פלגה ג׳</option><option>פלגה ד׳</option><option>מפקדה</option><option>פלס״מ</option><option>אג״מ</option>
         </select>
       </div>
       <div class="fg"><label class="fl">תאריך יעד</label><input class="fi" type="date" id="t-due"></div>
@@ -559,7 +562,7 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="fg"><label class="fl">מצוות ל</label>
         <select class="fs" id="v-unit">
           <option value="">—</option>
-          <option>פלגה א׳</option><option>פלגה ב׳</option><option>פלגה ג׳</option><option>פלגה ד׳</option><option>מפקדה</option><option>פלס״מ</option>
+          <option>פלגה א׳</option><option>פלגה ב׳</option><option>פלגה ג׳</option><option>פלגה ד׳</option><option>מפקדה</option><option>פלס״מ</option><option>אג״מ</option><option>פלס״מ</option>
         </select>
       </div>
     </div>
@@ -633,22 +636,44 @@ const ROLES = {
   dept: [
     { id:'officer', icon:'⭐', name:'קצין מחלקה', desc:'ניהול מלא של המחלקה' },
     { id:'deputy',  icon:'🎖️', name:'סגן קצין',   desc:'עדכון וביצוע' },
+    { id:'rasp',    icon:'🪖', name:'רס״פ',        desc:'הגשת דרישות ומעקב' },
   ],
-  staff: [ { id:'view', icon:'👁️', name:'אג״מ', desc:'ראות מלאה — ללא עריכה' } ],
+  staff: [
+    { id:'mfp',  icon:'⭐', name:'מ״פ אג״מ',  desc:'מפקד — ראות מלאה' },
+    { id:'smp',  icon:'🎖️', name:'סמ״פ אג״מ', desc:'סגן מפקד — ניהול ועדכון' },
+    { id:'rasp', icon:'🪖', name:'רס״פ אג״מ',  desc:'הגשת דרישות ומעקב' },
+  ],
   hamal: [ { id:'hamal', icon:'📡', name:'חמ״ל פלס״מ', desc:'ראות מלאה + מעקב' } ],
-  kamatz:[ { id:'kamatz', icon:'⭐', name:'קמב״ץ מטה', desc:'ניהול מלא + הגדרות' } ],
+  palsam:[
+    { id:'mfp',  icon:'⭐', name:'מ״פ פלס״מ',  desc:'מפקד פלגה — ראות מלאה' },
+    { id:'smp',  icon:'🎖️', name:'סמ״פ פלס״מ', desc:'סגן מפקד — ניהול ועדכון' },
+    { id:'rasp', icon:'🪖', name:'רס״פ פלס״מ', desc:'הגשת דרישות ומעקב' },
+  ],
+  kamatz:[
+    { id:'kamatz', icon:'⭐', name:'קמב״ץ מטה',     desc:'ניהול מלא + הגדרות' },
+    { id:'hamal',  icon:'📡', name:'חמ״ל פלס״מ',    desc:'ראות מלאה + מעקב' },
+  ],
 };
 
 // ═══ PERMISSIONS ═════════════════════════
 function canEdit(){
-  return !['view','kamatz_view'].includes(SESSION.role) && SESSION.unitType !== 'staff';
+  if(['view'].includes(SESSION.role)) return false;
+  if(SESSION.unitType==='palsam' && SESSION.role==='rasp') return false;
+  if(SESSION.unitType==='palsam') return true; // מ"פ וסמ"פ — יכולים לערוך
+  if(SESSION.unitType==='staff') return false; // כולם באג"מ — ראות/הגשה ללא עריכה
+  return true;
 }
 function canEditVeh(){
   // רק מחלקת רכב יכולה לערוך רכבים, להצמיד ולמחוק
   return SESSION.unit === 'מחלקת רכב' && ['officer','deputy'].includes(SESSION.role);
 }
 function isAdmin(){ return ['kamatz','hamal'].includes(SESSION.role); }
-function canSeeAll(){ return ['kamatz','hamal','view'].includes(SESSION.role) || SESSION.unitType==='staff'; }
+function canSeeAll(){
+  if(['kamatz','hamal'].includes(SESSION.role)) return true;
+  if(SESSION.unitType==='staff') return true;
+  if(SESSION.unitType==='palsam' && ['mfp','smp'].includes(SESSION.role)) return true;
+  return false;
+}
 
 // ═══ LOGIN FLOW ══════════════════════════
 let selUnit='', selUnitType='', selRole='';
@@ -687,7 +712,7 @@ function goBack(){
 
 function doLogin(){
   SESSION = { role:selRole, unit:selUnit, unitType:selUnitType, name:selUnit };
-  const roleNames = {mfp:'מ״פ',smp:'סמ״פ',rasp:'רס״פ',officer:'קצין',deputy:'סגן',view:'אג״מ',hamal:'חמ״ל',kamatz:'קמב״ץ'};
+  const roleNames = {mfp:'מ״פ',smp:'סמ״פ',rasp:'רס״פ',officer:'קצין',deputy:'סגן',view:'קצין',hamal:'חמ״ל פלס״מ',kamatz:'קמב״ץ מטה'};
   document.getElementById('user-label').textContent = (roleNames[selRole]||'') + ' — ' + selUnit;
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -720,6 +745,9 @@ function buildNav(){
   if(SESSION.unitType==='company'){
     hide('veh'); hide('tana'); hide('inv'); hide('rep');
   }
+  if(SESSION.unitType==='palsam'){
+    hide('veh'); hide('tana'); hide('inv'); hide('rep');
+  }
   if(SESSION.unitType==='staff'){
     // agam: view only, no edit tabs visible differently
   }
@@ -727,6 +755,8 @@ function buildNav(){
   setTimeout(()=>{
     const b=document.getElementById('add-veh-btn');
     if(b) b.classList.toggle('hidden',!canEditVeh());
+    const rb=document.getElementById('reset-btn');
+    if(rb) rb.style.display=SESSION.role==='kamatz'?'':'none';
   },50);
 }
 
@@ -800,8 +830,19 @@ function persist(){
 // ═══ FILTER BY ROLE ══════════════════════
 function myTasks(){
   if(canSeeAll()) return tasks;
+  // רס"פ בפלגה — רואה משימות של הפלגה שלו
   if(SESSION.unitType==='company') return tasks.filter(t=>t.unit===SESSION.unit||t.loc&&locations.find(l=>l.name===t.loc&&l.unit===SESSION.unit));
+  // פלס"מ כללי רס"פ — רואה משימות שהגיש
+  if(SESSION.unitType==='palsam' && SESSION.role==='rasp') return tasks.filter(t=>t.unit==='פלס״מ');
+  // רס"פ במחלקת פלס"מ — רואה משימות שהגיש (לפי owner או unit)
+  if(SESSION.unitType==='dept' && SESSION.role==='rasp') return tasks.filter(t=>t.unit===SESSION.unit||t.prov===deptProv());
+  // קצין/סגן מחלקה — רואה כל המשימות של המחלקה
   if(SESSION.unitType==='dept') return tasks.filter(t=>t.prov===deptProv());
+  // אג"מ — לפי תפקיד
+  if(SESSION.unitType==='staff'){
+    if(SESSION.role==='rasp') return tasks.filter(t=>t.unit==='אג״מ');
+    return tasks; // מ"פ וסמ"פ אג"מ — ראות מלאה
+  }
   return tasks;
 }
 function deptProv(){
@@ -1345,6 +1386,13 @@ function openMNew(id){
     document.getElementById('m-task-title').textContent='📋 משימה חדשה';
     document.getElementById('t-save-btn').textContent='שמור משימה';
     ['t-title','t-desc','t-owner'].forEach(f=>document.getElementById(f).value='');
+    // אוטו-מילוי פלגה/יחידה לרס"פ
+    const unitSel = document.getElementById('t-unit');
+    if(SESSION.role==='rasp'){
+      unitSel.value = SESSION.unitType==='company' ? SESSION.unit :
+                      SESSION.unitType==='staff' ? 'אג״מ' :
+                      SESSION.unitType==='palsam' ? 'פלס״מ' : SESSION.unit;
+    }
   }
   if(id==='m-inv'){
     document.getElementById('i-edit-id').value='';
@@ -1511,6 +1559,15 @@ function updateKm(id){
 
 // ═══ LIVE REFRESH ════════════════════════
 function empty(icon,txt){return `<div class="empty"><div class="empty-i">${icon}</div>${txt}</div>`;}
+function resetDemo(){
+  if(!confirm('איפוס כל הנתונים לברירת המחדל — בטוח?')) return;
+  ['pl_t','pl_tr','pl_i','pl_v','pl_ta','pl_l'].forEach(k=>localStorage.removeItem(k));
+  loadData();
+  refreshAll();
+  showTab('dash');
+  alert('✅ הנתונים אופסו לברירת המחדל');
+}
+
 let liveTimer=null;
 function startLive(){
   if(liveTimer)clearInterval(liveTimer);
