@@ -465,6 +465,32 @@ body{
 
 .hidden{display:none!important;}
 </style>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLm8QoQmms1odVF6QwT5byZNdMgbkEeqc",
+      authDomain: "plasam-1824.firebaseapp.com",
+      projectId: "plasam-1824",
+      storageBucket: "plasam-1824.firebasestorage.app",
+      messagingSenderId: "869600923706",
+      appId: "1:869600923706:web:0f96630661f566b4ede503"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Expose to global scope
+    window._db = db;
+    window._auth = auth;
+    window._firebase = { collection, doc, setDoc, getDoc, onSnapshot, deleteDoc, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged };
+    window._firebaseReady = true;
+    document.dispatchEvent(new Event('firebase-ready'));
+  </script>
 </head>
 <body>
 
@@ -1078,7 +1104,16 @@ function doLogin(){
   document.getElementById('user-label').textContent = (roleNames[selRole]||'') + ' — ' + selUnit;
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='flex';
-  loadData(); buildNav(); refreshAll(); startLive();
+  buildNav();
+  // Load from Firestore if available, fallback to localStorage
+  if(window._firebaseReady){
+    loadFromFirestore();
+  } else {
+    loadData();
+    refreshAll();
+    document.addEventListener('firebase-ready', ()=>loadFromFirestore(), {once:true});
+  }
+  startLive();
 }
 
 function doLogout(){
@@ -1198,13 +1233,72 @@ function loadData(){
   tanaItems = JSON.parse(localStorage.getItem('pl_ta')||'null') || DEFAULTS.tana;
   locations = JSON.parse(localStorage.getItem('pl_l')||'null')  || DEFAULTS.locations;
 }
-function persist(){
+// ═══ FIRESTORE DATA LAYER ══════════════════
+const COLLECTIONS = {
+  tasks:'tasks', trips:'trips', inventory:'inventory',
+  vehicles:'vehicles', tana:'tana', locations:'locations'
+};
+
+async function persist(){
+  if(!window._db) { _localPersist(); return; }
+  const db = window._db;
+  const { collection, doc, setDoc } = window._firebase;
+  try {
+    await setDoc(doc(db,'data','tasks'),     {items: tasks});
+    await setDoc(doc(db,'data','trips'),     {items: trips});
+    await setDoc(doc(db,'data','inventory'), {items: inventory});
+    await setDoc(doc(db,'data','vehicles'),  {items: vehicles});
+    await setDoc(doc(db,'data','tana'),      {items: tanaItems});
+    await setDoc(doc(db,'data','locations'), {items: locations});
+  } catch(e) {
+    console.warn('Firestore write failed, using localStorage', e);
+    _localPersist();
+  }
+}
+
+function _localPersist(){
   localStorage.setItem('pl_t', JSON.stringify(tasks));
   localStorage.setItem('pl_tr',JSON.stringify(trips));
   localStorage.setItem('pl_i', JSON.stringify(inventory));
   localStorage.setItem('pl_v', JSON.stringify(vehicles));
   localStorage.setItem('pl_ta',JSON.stringify(tanaItems));
   localStorage.setItem('pl_l', JSON.stringify(locations));
+}
+
+async function loadFromFirestore(){
+  if(!window._db) { loadData(); return; }
+  const db = window._db;
+  const { doc, getDoc, onSnapshot } = window._firebase;
+  try {
+    // Initial load
+    const docs = await Promise.all([
+      getDoc(doc(db,'data','tasks')),
+      getDoc(doc(db,'data','trips')),
+      getDoc(doc(db,'data','inventory')),
+      getDoc(doc(db,'data','vehicles')),
+      getDoc(doc(db,'data','tana')),
+      getDoc(doc(db,'data','locations')),
+    ]);
+    tasks     = docs[0].exists() ? docs[0].data().items : DEFAULTS.tasks;
+    trips     = docs[1].exists() ? docs[1].data().items : DEFAULTS.trips;
+    inventory = docs[2].exists() ? docs[2].data().items : DEFAULTS.inventory;
+    vehicles  = docs[3].exists() ? docs[3].data().items : DEFAULTS.vehicles;
+    tanaItems = docs[4].exists() ? docs[4].data().items : DEFAULTS.tana;
+    locations = docs[5].exists() ? docs[5].data().items : DEFAULTS.locations;
+
+    // Real-time listeners
+    onSnapshot(doc(db,'data','tasks'),     d=>{ if(d.exists()){tasks=d.data().items; renderTasks(); refreshDash();} });
+    onSnapshot(doc(db,'data','trips'),     d=>{ if(d.exists()){trips=d.data().items; renderTrips(); refreshDash();} });
+    onSnapshot(doc(db,'data','vehicles'),  d=>{ if(d.exists()){vehicles=d.data().items; renderVeh(); refreshDash();} });
+    onSnapshot(doc(db,'data','tana'),      d=>{ if(d.exists()){tanaItems=d.data().items; renderTana();} });
+    onSnapshot(doc(db,'data','inventory'), d=>{ if(d.exists()){inventory=d.data().items; renderInv();} });
+    onSnapshot(doc(db,'data','locations'), d=>{ if(d.exists()){locations=d.data().items; renderLocs(); buildSelects();} });
+
+    refreshAll();
+  } catch(e) {
+    console.warn('Firestore load failed, using localStorage', e);
+    loadData();
+  }
 }
 
 // ═══ FILTER BY ROLE ══════════════════════
@@ -2148,10 +2242,15 @@ function updateKm(id){
 
 // ═══ LIVE REFRESH ════════════════════════
 function empty(icon,txt){return `<div class="empty"><div class="empty-i">${icon}</div>${txt}</div>`;}
-function resetDemo(){
+async function resetDemo(){
   if(!confirm('איפוס כל הנתונים לברירת המחדל — בטוח?')) return;
+  // Reset local arrays to defaults
+  tasks=DEFAULTS.tasks; trips=DEFAULTS.trips; inventory=DEFAULTS.inventory;
+  vehicles=DEFAULTS.vehicles; tanaItems=DEFAULTS.tana; locations=DEFAULTS.locations;
+  // Clear localStorage
   ['pl_t','pl_tr','pl_i','pl_v','pl_ta','pl_l'].forEach(k=>localStorage.removeItem(k));
-  loadData();
+  // Write defaults to Firestore
+  await persist();
   refreshAll();
   showTab('dash');
   alert('✅ הנתונים אופסו לברירת המחדל');
