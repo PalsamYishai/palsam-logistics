@@ -6,230 +6,464 @@
 <title>פלס״מ לוגיסטיקה — גדוד 1824</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* ── RESET & BASE ───────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;direction:rtl;-webkit-tap-highlight-color:transparent;}
 :root{
-  --bg:#f0f2f5;--s1:#ffffff;--s2:#f7f8fa;--s3:#eef0f3;
-  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
-  --accent:#e87340;--accent2:#c45e28;--glow:rgba(232,115,64,0.15);
-  --green:#1a9e72;--red:#d93636;--yellow:#c49200;--blue:#2472c8;--purple:#7c52d4;
-  --text:#1a1d27;--muted:#6b7280;--muted2:#8b95a3;--r:10px;
-  --card-shadow:0 1px 4px rgba(0,0,0,0.08);
-}
-body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;position:relative;}
+  /* Palette — military utility: warm off-white, deep navy, IDF olive, alert red */
+  --bg:#f5f4f0;
+  --surface:#ffffff;
+  --surface2:#f0efe9;
+  --border:#dddbd4;
+  --border-strong:#b8b5ac;
 
-/* סמל יחידה ברקע */
+  --navy:#1c2b3a;
+  --navy2:#2e3f52;
+  --olive:#5a6b3a;
+  --olive2:#6e8246;
+  --accent:#c45000;   /* IDF orange-brown — on insignia */
+  --accent-light:#fdf0e8;
+
+  --red:#c0392b;
+  --red-light:#fdf2f1;
+  --yellow:#b8860b;
+  --yellow-light:#fdf8ec;
+  --green:#2e7d52;
+  --green-light:#edf7f1;
+  --blue:#1a5276;
+  --blue-light:#eaf2fb;
+  --purple:#6c3483;
+
+  --text:#1c2b3a;
+  --text2:#4a5568;
+  --muted:#7a8694;
+  --muted2:#a0aab4;
+
+  --r:6px;
+  --r2:4px;
+  --shadow:0 1px 3px rgba(28,43,58,0.08);
+  --shadow2:0 2px 8px rgba(28,43,58,0.10);
+}
+
+body{
+  font-family:'Rubik',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* Unit emblem watermark */
 #unit-emblem{
-  position:fixed;
-  top:50%;left:50%;
+  position:fixed;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  width:420px;height:420px;
-  opacity:0.055;
-  pointer-events:none;
-  z-index:0;
-  user-select:none;
+  width:360px;height:360px;
+  opacity:0.04;
+  pointer-events:none;z-index:0;
+  filter:grayscale(1) sepia(0.3);
 }
 
-/* ── LOGIN ── */
-#login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(160deg,#fff8f4 0%,#f0f2f5 60%);}
-.login-logo{width:68px;height:68px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:16px;box-shadow:0 0 40px var(--glow);}
-.login-title{font-size:22px;font-weight:800;margin-bottom:4px;}
-.login-sub{color:var(--accent);font-size:12px;font-weight:600;letter-spacing:1px;margin-bottom:4px;}
-.login-desc{color:var(--muted2);font-size:12px;margin-bottom:28px;}
-.login-card{background:#ffffff;border:1px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 4px 24px rgba(0,0,0,0.1);}
+/* ── LOGIN ────────────────────────────────────────── */
+#login{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:100vh;padding:20px;
+  position:relative;z-index:1;
+}
+.login-logo{
+  width:64px;height:64px;
+  background:var(--navy);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin-bottom:16px;
+}
+.login-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:3px;letter-spacing:-0.3px;}
+.login-sub{color:var(--accent);font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:3px;}
+.login-desc{color:var(--muted);font-size:12px;margin-bottom:24px;}
+.login-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:22px;
+  width:100%;max-width:360px;
+  box-shadow:var(--shadow2);
+}
 .login-step{display:none;}
 .login-step.active{display:block;}
-.step-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
-.unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.unit-btn{background:#f7f8fa;border:1px solid var(--border);border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;transition:all 0.18s;color:var(--text);font-family:inherit;}
-.unit-btn:hover,.unit-btn.sel{border-color:var(--accent);background:rgba(232,115,64,0.1);}
-.unit-btn .ui{font-size:20px;margin-bottom:5px;}
-.unit-btn .un{font-size:12px;font-weight:700;}
-.unit-btn .ud{font-size:10px;color:var(--muted2);margin-top:2px;}
-.role-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
-.role-btn{background:#f7f8fa;border:1px solid var(--border);border-radius:9px;padding:13px 14px;cursor:pointer;text-align:right;transition:all 0.18s;color:var(--text);font-family:inherit;display:flex;align-items:center;gap:10px;}
-.role-btn:hover,.role-btn.sel{border-color:var(--accent);background:rgba(232,115,64,0.1);}
-.role-btn .ri{font-size:18px;}
+.step-label{
+  font-size:10px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;
+}
+.unit-btn{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:12px 8px;
+  cursor:pointer;text-align:center;
+  transition:border-color 0.15s,background 0.15s;
+  color:var(--text);font-family:inherit;
+}
+.unit-btn:hover,.unit-btn.sel{
+  border-color:var(--accent);
+  background:var(--accent-light);
+}
+.unit-btn .ui{font-size:18px;margin-bottom:4px;}
+.unit-btn .un{font-size:12px;font-weight:600;color:var(--navy);}
+.unit-btn .ud{font-size:10px;color:var(--muted);margin-top:2px;}
+.role-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.role-btn{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:11px 13px;cursor:pointer;
+  text-align:right;transition:all 0.15s;
+  color:var(--text);font-family:inherit;
+  display:flex;align-items:center;gap:10px;
+}
+.role-btn:hover,.role-btn.sel{border-color:var(--accent);background:var(--accent-light);}
+.role-btn .ri{font-size:16px;}
 .role-btn .rl{flex:1;}
-.role-btn .rn{font-size:13px;font-weight:600;}
-.role-btn .rd{font-size:11px;color:var(--muted2);}
-.back-btn{background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer;font-family:inherit;margin-bottom:14px;display:flex;align-items:center;gap:4px;}
+.role-btn .rn{font-size:13px;font-weight:600;color:var(--navy);}
+.role-btn .rd{font-size:11px;color:var(--muted);margin-top:1px;}
+.back-btn{
+  background:none;border:none;color:var(--muted);
+  font-size:12px;cursor:pointer;font-family:inherit;
+  margin-bottom:12px;display:flex;align-items:center;gap:4px;
+}
 .back-btn:hover{color:var(--text);}
-.btn-login{width:100%;background:var(--accent);color:white;border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.18s;}
-.btn-login:hover{background:var(--accent2);}
+.btn-login{
+  width:100%;background:var(--navy);color:white;
+  border:none;border-radius:var(--r);padding:12px;
+  font-size:14px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:background 0.15s;
+  letter-spacing:0.2px;
+}
+.btn-login:hover{background:var(--navy2);}
 .btn-login:disabled{opacity:0.4;cursor:not-allowed;}
 
-/* ── APP ── */
-#app{display:none;flex-direction:column;min-height:100vh;}
-.topbar{background:#ffffff;border-bottom:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.06);padding:0 14px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.topbar-l{display:flex;align-items:center;gap:9px;}
-.tlogo{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
-.ttitle{font-weight:800;font-size:14px;}
-.tunit{font-size:10px;color:var(--accent);font-weight:600;}
-.topbar-r{display:flex;align-items:center;gap:7px;}
-.user-pill{background:#f7f8fa;border:1px solid var(--border2);border-radius:20px;padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:5px;}
-.udot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.logout{background:none;border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--muted2);cursor:pointer;font-size:11px;font-family:inherit;}
+/* ── APP SHELL ────────────────────────────────────── */
+#app{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:1;}
 
-/* ── NAV ── */
-.nav{background:#ffffff;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.topbar{
+  background:var(--navy);
+  padding:0 16px;height:50px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.topbar-l{display:flex;align-items:center;gap:10px;}
+.tlogo{
+  width:28px;height:28px;background:var(--accent);
+  border-radius:5px;display:flex;align-items:center;
+  justify-content:center;font-size:13px;
+}
+.ttitle{font-weight:700;font-size:14px;color:white;}
+.tunit{font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:0.3px;}
+.topbar-r{display:flex;align-items:center;gap:8px;}
+.user-pill{
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:20px;padding:4px 10px;
+  font-size:11px;color:rgba(255,255,255,0.85);
+  display:flex;align-items:center;gap:5px;
+}
+.udot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.logout{
+  background:none;border:1px solid rgba(255,255,255,0.2);
+  border-radius:4px;padding:4px 10px;
+  color:rgba(255,255,255,0.7);cursor:pointer;
+  font-size:11px;font-family:inherit;
+  transition:all 0.15s;
+}
+.logout:hover{border-color:rgba(255,255,255,0.4);color:white;}
+
+/* ── NAV TABS ──────────────────────────────────────── */
+.nav{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;
+}
 .nav::-webkit-scrollbar{display:none;}
 .nav-inner{display:flex;min-width:max-content;}
-.ntab{flex:none;padding:0 14px;height:42px;display:flex;align-items:center;gap:5px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted2);font-size:12px;font-weight:500;white-space:nowrap;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.ntab{
+  flex:none;padding:0 14px;height:40px;
+  display:flex;align-items:center;gap:5px;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  color:var(--muted);font-size:12px;font-weight:500;
+  white-space:nowrap;transition:all 0.15s;
+  background:none;border-top:none;border-left:none;border-right:none;
+  font-family:inherit;
+}
 .ntab:hover{color:var(--text);}
-.ntab.active{color:var(--accent);border-bottom-color:var(--accent);}
-.nbadge{background:var(--accent);color:#fff;font-size:10px;border-radius:5px;padding:1px 5px;font-weight:700;}
-.nbadge.g{background:var(--green);color:#000;}
+.ntab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+.nbadge{
+  background:var(--red);color:white;
+  font-size:10px;border-radius:3px;
+  padding:1px 5px;font-weight:700;
+}
+.nbadge.g{background:var(--green);color:white;}
 
-/* ── CONTENT ── */
-.page{flex:1;padding:14px;max-width:720px;margin:0 auto;width:100%;}
+/* ── PAGE LAYOUT ──────────────────────────────────── */
+.page{flex:1;padding:16px;max-width:700px;margin:0 auto;width:100%;}
 .ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
-.pt{font-size:17px;font-weight:800;}
-.ps{font-size:11px;color:var(--muted2);margin-top:3px;}
+.pt{font-size:16px;font-weight:700;color:var(--navy);letter-spacing:-0.3px;}
+.ps{font-size:11px;color:var(--muted);margin-top:2px;}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;border:none;white-space:nowrap;}
-.btn-p{background:var(--accent);color:#fff;}
-.btn-p:hover{background:var(--accent2);}
-.btn-s{background:var(--s2);color:var(--text);border:1px solid var(--border2);}
-.btn-s:hover{border-color:var(--accent);color:var(--accent);}
-.btn-g{background:rgba(45,212,160,0.12);color:var(--green);border:1px solid rgba(45,212,160,0.25);}
-.btn-d{background:rgba(244,66,82,0.1);color:var(--red);border:1px solid rgba(244,66,82,0.2);}
-.btn-xs{padding:5px 10px;font-size:11px;border-radius:6px;}
+/* ── BUTTONS ───────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:var(--r2);padding:7px 13px;
+  font-size:12px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all 0.15s;
+  border:1px solid transparent;white-space:nowrap;
+}
+.btn-p{background:var(--navy);color:white;border-color:var(--navy);}
+.btn-p:hover{background:var(--navy2);}
+.btn-s{background:var(--surface);color:var(--text);border-color:var(--border);}
+.btn-s:hover{border-color:var(--border-strong);}
+.btn-g{background:var(--green-light);color:var(--green);border-color:rgba(46,125,82,0.25);}
+.btn-g:hover{background:#daf0e8;}
+.btn-d{background:var(--red-light);color:var(--red);border-color:rgba(192,57,43,0.2);}
+.btn-d:hover{background:#fbe5e3;}
+.btn-xs{padding:4px 9px;font-size:11px;border-radius:3px;}
 
-/* ── STATS ── */
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
-.sbox{background:#ffffff;border:1px solid var(--border);box-shadow:var(--card-shadow);border-radius:var(--r);padding:13px;position:relative;overflow:hidden;}
-.sbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-.sbox.red::before{background:var(--red);}
-.sbox.yellow::before{background:var(--yellow);}
-.sbox.green::before{background:var(--green);}
-.sbox.accent::before{background:var(--accent);}
-.slabel{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;}
-.sval{font-size:26px;font-weight:800;}
+/* ── STAT BOXES ───────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;}
+.sbox{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px;
+  border-top:2px solid var(--border);
+}
+.sbox.red{border-top-color:var(--red);}
+.sbox.yellow{border-top-color:var(--yellow);}
+.sbox.green{border-top-color:var(--green);}
+.sbox.accent{border-top-color:var(--accent);}
+.slabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.sval{font-size:24px;font-weight:700;color:var(--navy);}
 .sval.red{color:var(--red);}
 .sval.yellow{color:var(--yellow);}
 .sval.green{color:var(--green);}
 .sval.accent{color:var(--accent);}
 
-/* ── CARDS ── */
-.card{background:#ffffff;border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:9px;transition:border-color 0.15s;box-shadow:var(--card-shadow);}
-.card:hover{border-color:var(--border2);}
-.card.urg{border-color:rgba(244,66,82,0.35);background:rgba(244,66,82,0.03);}
-.card.grp{border-color:rgba(45,212,160,0.3);}
-.ct{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px;}
-.cl{display:flex;align-items:flex-start;gap:9px;flex:1;min-width:0;}
-.pbar{width:3px;border-radius:2px;align-self:stretch;min-height:36px;flex-shrink:0;}
-.pu{background:var(--red);box-shadow:0 0 8px rgba(244,66,82,0.4);}
+/* ── CARDS ─────────────────────────────────────────── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:12px;margin-bottom:8px;
+  transition:border-color 0.15s;
+}
+.card:hover{border-color:var(--border-strong);}
+.card.urg{border-right:3px solid var(--red);border-right-color:var(--red);}
+.card.grp{border-right:3px solid var(--green);}
+.ct{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.cl{display:flex;align-items:flex-start;gap:8px;flex:1;min-width:0;}
+.pbar{width:2px;border-radius:1px;align-self:stretch;min-height:32px;flex-shrink:0;background:var(--border);}
+.pu{background:var(--red);}
 .ph2{background:var(--yellow);}
-.pn{background:var(--border2);}
-.ctitle{font-weight:600;font-size:13px;line-height:1.4;}
-.cmeta{font-size:11px;color:var(--muted2);margin-top:3px;display:flex;flex-wrap:wrap;gap:5px;}
-.cact{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+.pn{background:var(--border);}
+.ctitle{font-weight:600;font-size:13px;line-height:1.4;color:var(--navy);}
+.cmeta{
+  font-size:11px;color:var(--muted);
+  margin-top:3px;display:flex;flex-wrap:wrap;gap:5px;
+  align-items:center;
+}
+.cact{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;align-items:center;}
 
-/* ── BADGES ── */
-.badge{display:inline-flex;align-items:center;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:600;white-space:nowrap;}
-.bo{background:rgba(74,158,244,0.15);color:var(--blue);}
-.bp{background:rgba(244,200,66,0.15);color:var(--yellow);}
-.bd{background:rgba(45,212,160,0.15);color:var(--green);}
-.bu{background:rgba(244,66,82,0.2);color:var(--red);}
-.bgrp{background:rgba(45,212,160,0.12);color:var(--green);}
-.bprov{background:rgba(155,110,243,0.15);color:var(--purple);}
-.bloc{background:rgba(255,255,255,0.06);color:var(--muted2);}
+/* ── BADGES ────────────────────────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;
+  border-radius:3px;padding:2px 6px;
+  font-size:10px;font-weight:600;white-space:nowrap;
+  border:1px solid transparent;
+}
+.bo{background:var(--blue-light);color:var(--blue);border-color:rgba(26,82,118,0.15);}
+.bp{background:var(--yellow-light);color:var(--yellow);border-color:rgba(184,134,11,0.15);}
+.bd{background:var(--green-light);color:var(--green);border-color:rgba(46,125,82,0.15);}
+.bu{background:var(--red-light);color:var(--red);border-color:rgba(192,57,43,0.15);}
+.bgrp{background:var(--green-light);color:var(--green);border-color:rgba(46,125,82,0.15);}
+.bprov{background:var(--surface2);color:var(--navy2);border-color:var(--border);}
+.bloc{background:var(--surface2);color:var(--muted);border-color:var(--border);}
 
-/* ── STATUS TRACKER (visible to requester) ── */
-.status-track{display:flex;align-items:center;gap:0;margin:10px 0;overflow:hidden;border-radius:7px;border:1px solid var(--border);}
-.st-step{flex:1;padding:7px 4px;text-align:center;font-size:10px;font-weight:600;color:var(--muted);background:var(--s2);transition:all 0.2s;}
-.st-step.done{background:rgba(45,212,160,0.15);color:var(--green);}
-.st-step.active{background:rgba(232,115,64,0.15);color:var(--accent);}
+/* ── STATUS TRACK ──────────────────────────────────── */
+.status-track{
+  display:flex;align-items:center;gap:0;
+  margin:8px 0;overflow:hidden;
+  border-radius:4px;border:1px solid var(--border);
+}
+.st-step{
+  flex:1;padding:5px 3px;text-align:center;
+  font-size:10px;font-weight:500;color:var(--muted);
+  background:var(--surface2);transition:all 0.2s;
+}
+.st-step.done{background:var(--green-light);color:var(--green);}
+.st-step.active{background:var(--accent-light);color:var(--accent);font-weight:600;}
 .st-div{width:1px;background:var(--border);flex-shrink:0;}
 
-/* ── CHIPS / FILTERS ── */
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-.chip{background:#f7f8fa;border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;transition:all 0.15s;color:var(--muted2);}
-.chip:hover{color:var(--text);border-color:var(--border2);}
-.chip.active{background:rgba(232,115,64,0.15);border-color:var(--accent);color:var(--accent);}
-.chip.ga.active{background:rgba(45,212,160,0.12);border-color:var(--green);color:var(--green);}
+/* ── CHIPS ─────────────────────────────────────────── */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.chip{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:4px 11px;
+  font-size:11px;cursor:pointer;
+  transition:all 0.15s;color:var(--muted);
+}
+.chip:hover{color:var(--text);border-color:var(--border-strong);}
+.chip.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);font-weight:600;}
+.chip.ga.active{background:var(--green-light);border-color:var(--green);color:var(--green);}
 
-/* ── SUBTABS ── */
-.stabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+/* ── SUB TABS ──────────────────────────────────────── */
+.stabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
 .stabs::-webkit-scrollbar{display:none;}
-.stab{flex:none;background:#f7f8fa;border:1px solid var(--border);border-radius:7px;padding:6px 13px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--muted2);transition:all 0.15s;white-space:nowrap;}
-.stab.active{background:rgba(232,115,64,0.12);border-color:var(--accent);color:var(--accent);font-weight:600;}
+.stab{
+  flex:none;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r2);
+  padding:5px 12px;font-size:11px;cursor:pointer;
+  font-family:inherit;color:var(--muted);
+  transition:all 0.15s;white-space:nowrap;
+}
+.stab.active{
+  background:var(--navy);color:white;
+  border-color:var(--navy);font-weight:600;
+}
 
-/* ── SECTION DIVIDER ── */
-.sdiv{display:flex;align-items:center;gap:8px;margin:16px 0 10px;color:var(--muted2);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+/* ── SECTION DIVIDER ───────────────────────────────── */
+.sdiv{
+  display:flex;align-items:center;gap:8px;
+  margin:14px 0 10px;color:var(--muted);
+  font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
 .sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--border);}
 
-/* ── GROUP BANNER ── */
-.gbanner{background:rgba(26,158,114,0.07);border:1px solid rgba(26,158,114,0.22);border-radius:var(--r);padding:10px 13px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.gbanner-t{font-size:11px;color:var(--green);display:flex;align-items:center;gap:7px;}
+/* ── GROUP BANNER ──────────────────────────────────── */
+.gbanner{
+  background:var(--green-light);
+  border:1px solid rgba(46,125,82,0.25);
+  border-radius:var(--r);padding:9px 12px;
+  margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.gbanner-t{font-size:11px;color:var(--green);display:flex;align-items:center;gap:6px;font-weight:500;}
 
-/* ── VEHICLE CARD ── */
-.vrow{display:flex;align-items:center;gap:10px;padding:11px 13px;background:#ffffff;box-shadow:var(--card-shadow);border-radius:8px;margin-bottom:8px;border:1px solid var(--border);}
-.vdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.vok{background:var(--green);box-shadow:0 0 6px rgba(45,212,160,0.4);}
+/* ── VEHICLE ROWS ──────────────────────────────────── */
+.vrow{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;background:var(--surface);
+  border-radius:var(--r);margin-bottom:6px;
+  border:1px solid var(--border);
+}
+.vdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.vok{background:var(--green);}
 .vimt{background:var(--yellow);}
 .vdown{background:var(--red);}
 .vinfo{flex:1;}
-.vname{font-weight:600;font-size:13px;}
-.vmeta{font-size:11px;color:var(--muted2);margin-top:2px;}
+.vname{font-weight:600;font-size:13px;color:var(--navy);}
+.vmeta{font-size:11px;color:var(--muted);margin-top:2px;}
 .vkm{font-size:11px;text-align:left;}
-.vkm .km{font-size:16px;font-weight:700;}
+.vkm .km{font-size:15px;font-weight:700;color:var(--navy);}
 
-/* ── TANA CARD ── */
-.tana-card{background:#ffffff;border:1px solid var(--border);box-shadow:var(--card-shadow);border-radius:8px;padding:12px;margin-bottom:8px;}
-.tana-type-badge{display:inline-flex;align-items:center;gap:4px;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:600;margin-bottom:8px;}
-.tt-veh{background:rgba(74,158,244,0.15);color:var(--blue);}
-.tt-gun{background:rgba(244,66,82,0.12);color:var(--red);}
-.tt-opt{background:rgba(155,110,243,0.12);color:var(--purple);}
-.tt-uav{background:rgba(45,212,160,0.12);color:var(--green);}
-.tt-other{background:rgba(255,255,255,0.06);color:var(--muted2);}
+/* ── TANA CARDS ────────────────────────────────────── */
+.tana-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:11px;margin-bottom:7px;
+}
+.tana-type-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  border-radius:3px;padding:2px 7px;
+  font-size:10px;font-weight:600;margin-bottom:7px;
+  border:1px solid transparent;
+}
+.tt-veh{background:var(--blue-light);color:var(--blue);border-color:rgba(26,82,118,0.15);}
+.tt-gun{background:var(--red-light);color:var(--red);border-color:rgba(192,57,43,0.15);}
+.tt-opt{background:#f3eafa;color:var(--purple);border-color:rgba(108,52,131,0.15);}
+.tt-uav{background:var(--green-light);color:var(--green);border-color:rgba(46,125,82,0.15);}
+.tt-other{background:var(--surface2);color:var(--muted);border-color:var(--border);}
 
-/* ── PROGRESS BAR ── */
-.progw{height:5px;background:var(--border);border-radius:3px;margin-top:8px;}
-.progb{height:5px;border-radius:3px;transition:width 0.4s;}
+/* ── PROGRESS BAR ──────────────────────────────────── */
+.progw{height:4px;background:var(--border);border-radius:2px;margin-top:6px;}
+.progb{height:4px;border-radius:2px;transition:width 0.4s;}
 
-/* ── MODAL ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);}
+/* ── INVENTORY ─────────────────────────────────────── */
+.inv-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:10px 12px;margin-bottom:7px;
+}
+.inv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.inv-name{font-weight:600;font-size:13px;color:var(--navy);}
+.inv-qty{font-size:18px;font-weight:700;}
+.inv-meta{font-size:11px;color:var(--muted);}
+
+/* ── REPORTS ───────────────────────────────────────── */
+.rep-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+.rk{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px;text-align:center;}
+.rk-label{font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;letter-spacing:0.4px;}
+.rk-val{font-size:20px;font-weight:700;color:var(--navy);}
+
+/* ── MODAL ─────────────────────────────────────────── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(28,43,58,0.5);
+  z-index:200;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(2px);
+}
 .overlay.open{display:flex;}
-.modal{background:#ffffff;border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:22px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:su 0.22s cubic-bezier(0.16,1,0.3,1);}
+.modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px 10px 0 0;
+  padding:20px;width:100%;max-width:500px;
+  max-height:90vh;overflow-y:auto;
+  animation:su 0.2s cubic-bezier(0.16,1,0.3,1);
+}
 @keyframes su{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.mt{font-size:15px;font-weight:700;}
-.mc{background:var(--s2);border:1px solid var(--border2);color:var(--muted2);border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.mt{font-size:14px;font-weight:700;color:var(--navy);}
+.mc{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--muted);border-radius:50%;width:26px;height:26px;
+  cursor:pointer;font-size:14px;display:flex;align-items:center;
+  justify-content:center;font-family:inherit;transition:all 0.15s;
+}
+.mc:hover{color:var(--text);}
 
-/* ── FORM ── */
-.fg{margin-bottom:13px;}
-.fl{font-size:10px;font-weight:600;color:var(--muted2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:0.5px;}
+/* ── FORM ──────────────────────────────────────────── */
+.fg{margin-bottom:12px;}
+.fl{
+  font-size:10px;font-weight:600;color:var(--muted);
+  margin-bottom:4px;display:block;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
 .fl .req{color:var(--red);}
-.fi,.fs,.fta{width:100%;background:#f7f8fa;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:inherit;transition:border-color 0.15s;}
-.fi:focus,.fs:focus,.fta:focus{outline:none;border-color:var(--accent);}
-.fta{resize:vertical;min-height:65px;}
+.fi,.fs,.fta{
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:9px 11px;color:var(--text);
+  font-size:13px;font-family:inherit;
+  transition:border-color 0.15s;
+}
+.fi:focus,.fs:focus,.fta:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 2px var(--accent-light);
+}
+.fta{resize:vertical;min-height:60px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.fs option{background:var(--s2);}
-.fnote{font-size:10px;color:var(--muted2);margin-top:4px;}
+.fs option{background:var(--surface);}
+.fnote{font-size:10px;color:var(--muted);margin-top:3px;}
 .fnote.warn{color:var(--yellow);}
 
-/* ── INV ── */
-.inv-item{background:#ffffff;border:1px solid var(--border);box-shadow:var(--card-shadow);border-radius:8px;padding:11px 13px;margin-bottom:8px;}
-.inv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.inv-name{font-weight:600;font-size:13px;}
-.inv-qty{font-size:20px;font-weight:800;}
-.inv-meta{font-size:11px;color:var(--muted2);}
+/* ── EMPTY STATES ──────────────────────────────────── */
+.empty{text-align:center;padding:36px 16px;color:var(--muted);}
+.empty-i{font-size:28px;margin-bottom:8px;opacity:0.5;}
 
-/* ── REPORTS ── */
-.rep-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px;}
-.rk{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:11px;text-align:center;}
-.rk-label{font-size:9px;color:var(--muted2);text-transform:uppercase;margin-bottom:4px;}
-.rk-val{font-size:22px;font-weight:800;}
+/* ── PRINT ─────────────────────────────────────────── */
+@media print{
+  .topbar,.nav,.ph .btn,.cact,.overlay{display:none!important;}
+  body{background:#fff;color:#000;}
+  .card{border:1px solid #ddd;break-inside:avoid;}
+}
 
-.empty{text-align:center;padding:40px 16px;color:var(--muted);}
-.empty-i{font-size:36px;margin-bottom:8px;opacity:0.4;}
 .hidden{display:none!important;}
-
-/* ── PRINT ── */
-@media print{.topbar,.nav,.ph .btn,.cact,.overlay{display:none!important;}body{background:#fff;color:#000;}.card{border:1px solid #ddd;break-inside:avoid;}}
 </style>
 </head>
 <body>
@@ -501,11 +735,11 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div id="rep-custom-range" class="hidden" style="display:none;gap:10px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:6px;font-size:12px">
-        <label style="color:var(--muted2)">מ-</label>
+        <label style="color:var(--muted)">מ-</label>
         <input class="fi" type="date" id="rep-from" style="width:140px;padding:6px 10px;font-size:12px">
       </div>
       <div style="display:flex;align-items:center;gap:6px;font-size:12px">
-        <label style="color:var(--muted2)">עד-</label>
+        <label style="color:var(--muted)">עד-</label>
         <input class="fi" type="date" id="rep-to" style="width:140px;padding:6px 10px;font-size:12px">
       </div>
       <button class="btn btn-p btn-xs" onclick="renderRep()">הצג</button>
@@ -528,13 +762,22 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="modal">
     <div class="mh"><div class="mt" id="m-task-title">📋 דרישה לוגיסטית חדשה</div><button class="mc" onclick="closeM('m-task')">✕</button></div>
     <div class="fg"><label class="fl">תיאור הדרישה <span class="req">*</span></label><input class="fi" id="t-title" placeholder="תאר את הדרישה בקצרה..."></div>
-    <div class="fg"><label class="fl">נותן שירות <span class="req">*</span></label>
+    <!-- נותן שירות — רק קמב"ץ/קצין רואה, מגיש רואה קטגוריה כללית -->
+    <div class="fg" id="t-prov-wrap">
+      <label class="fl">קטגוריה / נותן שירות</label>
       <select class="fs" id="t-prov">
-        <option value="">בחר...</option>
-        <option>רכב</option><option>טנ״א</option><option>רפואה</option>
-        <option>רבנות</option><option>לוגיסטיקה</option><option>מטבח</option><option>קשר</option><option>נסיעה / הובלה</option>
+        <option value="">בחר קטגוריה...</option>
+        <option value="רכב">🚗 רכב</option>
+        <option value="טנ״א">🔧 טנ״א (תיקון שטח / טיפול)</option>
+        <option value="רפואה">⚕️ רפואה</option>
+        <option value="רבנות">✡️ רבנות</option>
+        <option value="לוגיסטיקה">📦 לוגיסטיקה / אפסנאות</option>
+        <option value="מטבח">🍽️ מטבח</option>
+        <option value="קשר">📻 קשר</option>
+        <option value="נסיעה / הובלה">🚌 נסיעה / הובלה</option>
+        <option value="כללי">📋 כללי / לא ברור</option>
       </select>
-      <div class="fnote">לתיקון רכב בשטח → טנ״א</div>
+      <div class="fnote" id="t-prov-note">בחר את הקטגוריה הקרובה ביותר — הקמב״ץ יצוות לנותן השירות המתאים</div>
     </div>
     <input type="hidden" id="t-prio" value="רגיל">
     <div class="fg"><label class="fl">מיקום</label>
@@ -554,6 +797,15 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="frow">
       <div class="fg"><label class="fl">איש קשר <span class="req">*</span></label><input class="fi" id="t-owner" placeholder="שם + תפקיד"></div>
       <div class="fg"><label class="fl">טלפון <span class="req">*</span></label><input class="fi" type="tel" id="t-phone" placeholder="05X-XXXXXXX"></div>
+    </div>
+    <!-- ניתוב — רק קמב"ץ -->
+    <div class="fg" id="t-route-wrap" style="display:none">
+      <label class="fl" style="color:var(--accent)">⭐ ניתוב לנותן שירות (קמב״ץ בלבד)</label>
+      <select class="fs" id="t-route">
+        <option value="">— ממתין לניתוב —</option>
+        <option>רכב</option><option>טנ״א</option><option>רפואה</option>
+        <option>רבנות</option><option>לוגיסטיקה</option><option>מטבח</option><option>קשר</option>
+      </select>
     </div>
     <input type="hidden" id="t-edit-id"><button class="btn-login" id="t-save-btn" onclick="saveTask()">שמור דרישה</button>
   </div>
@@ -628,8 +880,25 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="frow">
       <div class="fg"><label class="fl">מספר / זיהוי <span class="req">*</span></label><input class="fi" id="v-id" placeholder="האמר 1 / לוחית..."></div>
       <div class="fg"><label class="fl">סוג רכב</label>
-        <select class="fs" id="v-type"><option>האמר</option><option>סופה</option><option>4x4</option><option>4x2</option><option>דוד</option><option>גמל מים</option><option>אמבולנס</option><option>רכב קל</option><option>משא</option></select>
+        <select class="fs" id="v-type" onchange="toggleVehTypeOther(this)">
+          <option>האמר</option>
+          <option>סופה</option>
+          <option>דוד</option>
+          <option>גמל מים</option>
+          <option>אמבולנס</option>
+          <option>רכב קל</option>
+          <option>משא</option>
+          <option value="אחר">אחר...</option>
+        </select>
+        <input class="fi" id="v-type-other" placeholder="הקלד סוג רכב..." style="margin-top:6px;display:none">
       </div>
+    </div>
+    <div class="fg"><label class="fl">הנעה</label>
+      <select class="fs" id="v-drive">
+        <option value="">—</option>
+        <option>4x4</option>
+        <option>4x2</option>
+      </select>
     </div>
     <div class="frow">
       <div class="fg"><label class="fl">סטטוס</label>
@@ -738,6 +1007,24 @@ function canEdit(){
   // staff (אג"מ) — לא ראות מלאה, רק דרישות שלהם
   return true;
 }
+function toggleVehTypeOther(sel){
+  const other = document.getElementById('v-type-other');
+  if(sel.value==='אחר'){
+    other.style.display='block';
+    other.focus();
+  } else {
+    other.style.display='none';
+    other.value='';
+  }
+}
+
+function canSubmit(){
+  // מי שיכול להגיש דרישה/נסיעה חדשה
+  if(isAdmin()) return true;
+  if(SESSION.role==='rasp') return true;
+  if(['officer','deputy'].includes(SESSION.role)) return true;
+  return false;
+}
 function canEditVeh(){
   // רק מחלקת רכב יכולה לערוך רכבים, להצמיד ולמחוק
   return SESSION.unit === 'מחלקת רכב' && ['officer','deputy'].includes(SESSION.role);
@@ -815,7 +1102,8 @@ function buildNav(){
     if(SESSION.unit==='מחלקת רכב') show('veh');
     if(SESSION.unit==='מחלקת טנא'){ show('tana'); show('veh'); }
     if(!['מחלקת רכב','מחלקת טנא'].includes(SESSION.unit)) hide('inv');
-    hide('rep');
+    // כל מחלקה רואה דוחות
+    show('rep');
   }
   if(SESSION.unitType==='company'){
     hide('veh'); hide('tana'); hide('inv'); hide('rep');
@@ -926,16 +1214,25 @@ function myTasks(){
   if(SESSION.unitType==='company') return tasks.filter(t=>t.unit===SESSION.unit||t.loc&&locations.find(l=>l.name===t.loc&&l.unit===SESSION.unit));
   // פלס"מ כללי רס"פ — רואה משימות שהגיש
   if(SESSION.unitType==='palsam' && SESSION.role==='rasp') return tasks.filter(t=>t.unit==='פלסמ');
-  // רס"פ במחלקת פלס"מ — רואה משימות שהגיש (לפי owner או unit)
-  if(SESSION.unitType==='dept' && SESSION.role==='rasp') return tasks.filter(t=>t.unit===SESSION.unit||t.prov===deptProv());
-  // קצין/סגן מחלקה — רואה כל המשימות של המחלקה
-  if(SESSION.unitType==='dept') return tasks.filter(t=>t.prov===deptProv());
+  // מחלקות — רואות משימות שנותבו אליהן (לפי prov או route)
+  if(SESSION.unitType==='dept'){
+    const dp=deptProv();
+    return tasks.filter(t=>t.prov===dp||t.route===dp);
+  }
   // אג"מ — מ"פ וסמ"פ צפייה, רס"פ הגשה
   if(SESSION.unitType==='staff') return tasks.filter(t=>t.unit==='אגמ');
   return tasks;
 }
 function deptProv(){
-  const map={'מחלקת רכב':'רכב','מחלקת טנא':'טנא','מחלקת מטבח':'מטבח','רפואה':'רפואה','רבנות':'רבנות','לוגיסטיקה':'לוגיסטיקה','קשר':'קשר'};
+  const map={
+    'מחלקת רכב':'רכב',
+    'מחלקת טנא':'טנ״א',
+    'מחלקת מטבח':'מטבח',
+    'רפואה':'רפואה',
+    'רבנות':'רבנות',
+    'לוגיסטיקה':'לוגיסטיקה',
+    'קשר':'קשר'
+  };
   return map[SESSION.unit]||'';
 }
 
@@ -999,19 +1296,19 @@ function taskCard(t){
         <div style="flex:1;min-width:0">
           <div class="ctitle">${t.title}</div>
           <div class="cmeta">
-            <span class="badge bprov">${t.prov}</span>
+            ${t.route?`<span class="badge bprov">✓ ${t.route}</span><span style="font-size:10px;color:var(--muted)">קטגוריה: ${t.category||t.prov}</span>`:`<span class="badge" style="background:rgba(255,165,0,0.12);color:#c47a00">⏳ ממתין לניתוב</span><span class="badge bprov">${t.prov}</span>`}
             ${t.loc?`<span class="badge bloc">📍 ${t.loc}</span>`:''}
-            ${t.unit?`<span style="color:var(--muted2)">📌 ${t.unit}</span>`:''}
-            ${t.due?`<span style="color:var(--muted2)">📅 ${t.due}</span>`:''}
-            ${t.submitter?`<span style="color:var(--muted2)">👤 ${t.submitter}</span>`:''}
-            ${t.phone?`<span style="color:var(--muted2)">📞 ${t.contact||''} ${t.phone}</span>`:''}
+            ${t.unit?`<span style="color:var(--muted)">📌 ${t.unit}</span>`:''}
+            ${t.due?`<span style="color:var(--muted)">📅 ${t.due}</span>`:''}
+            ${t.submitter?`<span style="color:var(--muted)">👤 ${t.submitter}</span>`:''}
+            ${t.phone?`<span style="color:var(--muted)">📞 ${t.contact||''} ${t.phone}</span>`:''}
             ${t.gid?'<span class="badge bgrp">🔗 מאוגד</span>':''}
           </div>
         </div>
       </div>
       <div style="flex-shrink:0">${sbadge(t.status,t.prio)}</div>
     </div>
-    ${t.desc?`<div style="font-size:11px;color:var(--muted2);margin-bottom:6px;padding-right:12px">${t.desc}</div>`:''}
+    ${t.desc?`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;padding-right:12px">${t.desc}</div>`:''}
     ${isRequester ? statusSteps(t.status) : ''}
     <div class="cact">
       ${editable&&t.status!=='prog'&&t.status!=='done'?`<button class="btn btn-s btn-xs" onclick="setTs('${t.id}','prog')">התחל</button>`:''}
@@ -1049,6 +1346,18 @@ function renderTasks(){
 }
 function fTasks(f,el){tFilter=f;document.querySelectorAll('#task-chips .chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderTasks();}
 function setTs(id,s){const t=tasks.find(x=>x.id===id);if(t){t.status=s;persist();refreshAll();}}
+function quickRoute(id, prov){
+  if(!prov || !isAdmin()) return;
+  const t = tasks.find(x=>x.id===id);
+  if(t){
+    t.route = prov;
+    t.prov = prov;
+    t.status = t.status==='open' ? 'prog' : t.status; // מעבר לבביצוע
+    persist();
+    renderTasks();
+    refreshDash();
+  }
+}
 function setPrio(id,p){
   if(!isAdmin()&&SESSION.role!=='kamatz') return;
   const t=tasks.find(x=>x.id===id);
@@ -1081,9 +1390,9 @@ function tripCard(t){
     <div class="ct">
       <div style="flex:1">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
-          <span style="background:var(--s2);border:1px solid var(--border2);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:600">${t.from}</span>
+          <span style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:600">${t.from}</span>
           <span style="color:var(--muted)">←</span>
-          <span style="background:var(--s2);border:1px solid var(--border2);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:600">${t.to}</span>
+          <span style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:600">${t.to}</span>
         </div>
         <div class="cmeta">
           ${t.veh?`<span>${t.veh}</span>`:''}
@@ -1095,9 +1404,9 @@ function tripCard(t){
           ${t.gid?'<span class="badge bgrp">🔗 מאוגד</span>':''}
         </div>
       </div>
-      <span class="badge" style="background:rgba(255,255,255,0.06);color:${sc};flex-shrink:0">${t.status==='confirmed'?'מאושר':'ממתין'}</span>
+      <span class="badge" style="background:var(--surface2);color:${sc};flex-shrink:0">${t.status==='confirmed'?'מאושר':'ממתין'}</span>
     </div>
-    <div style="font-size:11px;color:var(--muted2);margin-bottom:7px">${t.pur}</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:7px">${t.pur}</div>
     <div class="cact">
       ${canEdit()&&t.status!=='confirmed'?`<button class="btn btn-g btn-xs" onclick="confirmTrip('${t.id}')">✓ אשר</button>`:''}
       ${canEdit()?`<button class="btn btn-d btn-xs" style="margin-right:auto" onclick="delTrip('${t.id}')">מחק</button>`:''}
@@ -1182,8 +1491,8 @@ function vehRow(v,c){
     <div class="vdot ${dot}"></div>
     <div class="vinfo">
       <div class="vname">${v.vid} <span class="badge ${sb}">${v.status}</span></div>
-      <div class="vmeta">${v.type} · ${v.unit}${v.driver?' · '+v.driver:''}</div>
-      ${v.notes?`<div style="font-size:10px;color:var(--muted2);margin-top:2px">${v.notes}</div>`:''}
+      <div class="vmeta">${v.type}${v.drive?' '+v.drive:''} · ${v.unit}${v.driver?' · '+v.driver:''}</div>
+      ${v.notes?`<div style="font-size:10px;color:var(--muted);margin-top:2px">${v.notes}</div>`:''}
     </div>
     <div class="vkm">
       <div class="km">${v.km.toLocaleString()}</div>
@@ -1234,7 +1543,7 @@ function renderVeh(){
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:7px 12px;background:${c.bg};border:1px solid ${c.border};border-radius:8px">
           <div style="width:10px;height:10px;border-radius:50%;background:${c.text};flex-shrink:0"></div>
           <span style="font-weight:700;font-size:13px;color:${c.text}">${unit}</span>
-          <span style="font-size:11px;color:var(--muted2);margin-right:auto">${vehs.length} רכבים</span>
+          <span style="font-size:11px;color:var(--muted);margin-right:auto">${vehs.length} רכבים</span>
           <span style="font-size:11px;color:var(--green)">${vehs.filter(v=>v.status==='כשיר').length} כשירים</span>
         </div>
         ${vehs.map(v=>vehRow(v,c)).join('')}
@@ -1261,9 +1570,9 @@ function renderTana(){
       <div class="tana-type-badge ${TANA_CSS[item.type]||'tt-other'}">${TANA_ICONS[item.type]||'🔧'} ${item.type}</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
         <div><div class="ctitle">${item.title}</div><div class="cmeta"><span>${item.unit}</span><span>📅 ${item.date}</span>${urg?'<span style="color:var(--red);font-weight:600">⚠️ דחוף</span>':''}</div></div>
-        <span class="badge" style="background:rgba(255,255,255,0.06);color:${TANA_STATUS_COL[item.status]||'var(--muted2)'};flex-shrink:0">${item.status}</span>
+        <span class="badge" style="background:var(--surface2);color:${TANA_STATUS_COL[item.status]||'var(--muted2)'};flex-shrink:0">${item.status}</span>
       </div>
-      ${item.notes?`<div style="font-size:11px;color:var(--muted2);margin-bottom:7px">${item.notes}</div>`:''}
+      ${item.notes?`<div style="font-size:11px;color:var(--muted);margin-bottom:7px">${item.notes}</div>`:''}
       <div class="cact">
         ${canEdit()&&item.status!=='הושלם'?`<button class="btn btn-g btn-xs" onclick="doneTana('${item.id}')">✓ הושלם</button>`:''}
         ${canEdit()?`<button class="btn btn-d btn-xs" style="margin-right:auto" onclick="delTana('${item.id}')">מחק</button>`:''}
@@ -1326,6 +1635,8 @@ function renderRep(){
   } else {from.setDate(now.getDate()-29);from.setHours(0,0,0,0);}
   // סינון לפי הרשאה
   let base = myTasks();
+  // כותרת הדוח לפי מחלקה
+  const repTitle = SESSION.unitType==='dept' ? `דוח מחלקת ${SESSION.unit.replace('מחלקת ','')}` : 'דוח כללי';
   // סינון לפי תאריך
   let filtered=base.filter(t=>new Date(t.created)>=from&&new Date(t.created)<=to);
   // סינון לפי סטטוס
@@ -1343,12 +1654,101 @@ function renderRep(){
   // ספירת פתוחות מכל הזמן (לא רק טווח)
   const allOpen = myTasks().filter(t=>t.status==='open').length;
   const allProg = myTasks().filter(t=>t.status==='prog').length;
+  // בניית סקשן מיוחד לפי מחלקה
+  let deptSection = '';
+  if(SESSION.unitType==='dept'){
+    if(SESSION.unit==='מחלקת רכב'){
+      const okV=vehicles.filter(v=>v.status==='כשיר').length;
+      const notOk=vehicles.filter(v=>v.status!=='כשיר');
+      const warnV=vehicles.filter(v=>(v.kmnext-v.km)<200&&v.status==='כשיר');
+      deptSection=`
+        <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">מצב הצי</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+          <div style="background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">כשירים</div>
+            <div style="font-size:22px;font-weight:800;color:var(--green)">${okV}</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">לא כשירים</div>
+            <div style="font-size:22px;font-weight:800;color:var(--red)">${notOk.length}</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">קרובים לטיפול</div>
+            <div style="font-size:22px;font-weight:800;color:var(--yellow)">${warnV.length}</div>
+          </div>
+        </div>
+        ${notOk.length?`<div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">רכבים לא כשירים</div>
+        <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--border);margin-bottom:14px">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;background:#fff">
+            <thead><tr style="background:var(--surface2);border-bottom:1px solid var(--border)">
+              <th style="padding:7px 12px;text-align:right">רכב</th>
+              <th style="padding:7px 12px;text-align:right">סטטוס</th>
+              <th style="padding:7px 12px;text-align:right">פלגה</th>
+            </tr></thead>
+            <tbody>${notOk.map(v=>`<tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:7px 12px">${v.vid}</td>
+              <td style="padding:7px 12px;color:var(--red)">${v.status}</td>
+              <td style="padding:7px 12px">${v.unit||'—'}</td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>`:''}`;
+    } else if(SESSION.unit==='מחלקת טנא'){
+      const planned=tanaItems.filter(t=>t.status==='מתוכנן').length;
+      const inprog=tanaItems.filter(t=>t.status==='בביצוע').length;
+      const done=tanaItems.filter(t=>t.status==='הושלם').length;
+      deptSection=`
+        <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">ימי טיפול ובחינות</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+          <div style="background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">מתוכנן</div>
+            <div style="font-size:22px;font-weight:800;color:var(--blue)">${planned}</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">בביצוע</div>
+            <div style="font-size:22px;font-weight:800;color:var(--yellow)">${inprog}</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:9px;padding:11px;text-align:center">
+            <div style="font-size:9px;color:var(--muted);margin-bottom:3px">הושלם</div>
+            <div style="font-size:22px;font-weight:800;color:var(--green)">${done}</div>
+          </div>
+        </div>`;
+    } else {
+      // מחלקות אחרות — מלאי
+      const myInv = myInventory();
+      const lowInv = myInv.filter(i=>i.qty<i.min);
+      if(myInv.length){
+        deptSection=`
+          <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">מצב מלאי</div>
+          ${lowInv.length?`<div style="background:rgba(217,54,54,0.06);border:1px solid rgba(217,54,54,0.2);border-radius:8px;padding:10px 13px;margin-bottom:10px;font-size:12px;color:var(--red)">⚠️ ${lowInv.length} פריטים מתחת לתקן מינימום</div>`:''}
+          <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--border);margin-bottom:14px">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;background:#fff">
+              <thead><tr style="background:var(--surface2);border-bottom:1px solid var(--border)">
+                <th style="padding:7px 12px;text-align:right">פריט</th>
+                <th style="padding:7px 12px;text-align:center">קיים</th>
+                <th style="padding:7px 12px;text-align:center">מינימום</th>
+                <th style="padding:7px 12px;text-align:center">סטטוס</th>
+              </tr></thead>
+              <tbody>${myInv.map(i=>{
+                const ok=i.qty>=i.min;
+                return `<tr style="border-bottom:1px solid var(--border)">
+                  <td style="padding:7px 12px">${i.name}</td>
+                  <td style="padding:7px 12px;text-align:center;font-weight:700;color:${ok?'var(--green)':'var(--red)'}">${i.qty}</td>
+                  <td style="padding:7px 12px;text-align:center;color:var(--muted)">${i.min}</td>
+                  <td style="padding:7px 12px;text-align:center">${ok?'✅':'⚠️'}</td>
+                </tr>`;
+              }).join('')}</tbody>
+            </table>
+          </div>`;
+      }
+    }
+  }
   document.getElementById('rep-content').innerHTML=`
+  ${deptSection}
   <div style="background:#fff8f4;border:1px solid rgba(232,115,64,0.25);border-radius:9px;padding:13px;margin-bottom:14px">
-    <div style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">סה״כ משימות פתוחות כרגע</div>
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">סה״כ משימות פתוחות כרגע</div>
     <div style="display:flex;gap:16px">
-      <div><span style="font-size:28px;font-weight:800;color:var(--red)">${allOpen}</span><span style="font-size:11px;color:var(--muted2);margin-right:4px">פתוחות</span></div>
-      <div><span style="font-size:28px;font-weight:800;color:var(--yellow)">${allProg}</span><span style="font-size:11px;color:var(--muted2);margin-right:4px">בביצוע</span></div>
+      <div><span style="font-size:28px;font-weight:800;color:var(--red)">${allOpen}</span><span style="font-size:11px;color:var(--muted);margin-right:4px">פתוחות</span></div>
+      <div><span style="font-size:28px;font-weight:800;color:var(--yellow)">${allProg}</span><span style="font-size:11px;color:var(--muted);margin-right:4px">בביצוע</span></div>
     </div>
   </div>
   <div class="rep-kpi">
@@ -1357,21 +1757,21 @@ function renderRep(){
     <div class="rk" style="border-color:rgba(45,212,160,0.3)"><div class="rk-label">הושלם</div><div class="rk-val" style="color:var(--green)">${done}</div></div>
     <div class="rk" style="border-color:rgba(244,66,82,0.3)"><div class="rk-label">דחוף</div><div class="rk-val" style="color:var(--red)">${urg}</div></div>
   </div>
-  <div style="background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:13px;margin-bottom:14px">
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:13px;margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px"><span style="font-weight:600">אחוז השלמה</span><span style="font-weight:800;color:${col}">${rate}%</span></div>
     <div class="progw" style="height:8px"><div class="progb" style="width:${rate}%;background:${col};height:8px"></div></div>
   </div>
   ${Object.entries(byProv).length?`
-  <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">לפי נותן שירות</div>
+  <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">לפי נותן שירות</div>
   <div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid var(--border)">
     <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:var(--s2);border-bottom:1px solid var(--border)">
-        <th style="padding:8px 12px;text-align:right;color:var(--muted2)">מחלקה</th>
+      <thead><tr style="background:var(--surface2);border-bottom:1px solid var(--border)">
+        <th style="padding:8px 12px;text-align:right;color:var(--muted)">מחלקה</th>
         <th style="padding:8px 12px;text-align:center;color:var(--blue)">פתוח</th>
         <th style="padding:8px 12px;text-align:center;color:var(--yellow)">בביצוע</th>
         <th style="padding:8px 12px;text-align:center;color:var(--green)">הושלם</th>
       </tr></thead>
-      <tbody style="background:var(--s1)">${Object.entries(byProv).map(([p,s])=>`
+      <tbody style="background:var(--surface)">${Object.entries(byProv).map(([p,s])=>`
         <tr style="border-bottom:1px solid var(--border)">
           <td style="padding:8px 12px;font-weight:500">${p}</td>
           <td style="padding:8px 12px;text-align:center;color:var(--blue)">${s.o}</td>
@@ -1381,17 +1781,17 @@ function renderRep(){
       </tbody>
     </table>
   </div>`:''} 
-  <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">רשימת משימות</div>
+  <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">רשימת משימות</div>
   <div style="overflow-x:auto;border-radius:8px;border:1px solid var(--border)">
     <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:440px">
-      <thead><tr style="background:var(--s2);border-bottom:1px solid var(--border)">
-        <th style="padding:7px 12px;text-align:right;color:var(--muted2)">כותרת</th>
-        <th style="padding:7px 12px;text-align:right;color:var(--muted2)">מחלקה</th>
-        <th style="padding:7px 12px;text-align:right;color:var(--muted2)">מיקום</th>
-        <th style="padding:7px 12px;text-align:right;color:var(--muted2)">עדיפות</th>
-        <th style="padding:7px 12px;text-align:right;color:var(--muted2)">סטטוס</th>
+      <thead><tr style="background:var(--surface2);border-bottom:1px solid var(--border)">
+        <th style="padding:7px 12px;text-align:right;color:var(--muted)">כותרת</th>
+        <th style="padding:7px 12px;text-align:right;color:var(--muted)">מחלקה</th>
+        <th style="padding:7px 12px;text-align:right;color:var(--muted)">מיקום</th>
+        <th style="padding:7px 12px;text-align:right;color:var(--muted)">עדיפות</th>
+        <th style="padding:7px 12px;text-align:right;color:var(--muted)">סטטוס</th>
       </tr></thead>
-      <tbody style="background:var(--s1)">${filtered.map(t=>{
+      <tbody style="background:var(--surface)">${filtered.map(t=>{
         const sc=t.status==='done'?'var(--green)':t.status==='prog'?'var(--yellow)':'var(--blue)';
         const sh=t.status==='done'?'הושלם':t.status==='prog'?'בביצוע':'פתוח';
         const pc=t.prio==='דחוף'?'var(--red)':t.prio==='גבוה'?'var(--yellow)':'var(--muted2)';
@@ -1402,7 +1802,7 @@ function renderRep(){
           <td style="padding:7px 12px;color:${pc}">${t.prio}</td>
           <td style="padding:7px 12px;color:${sc};font-weight:600">${sh}</td>
         </tr>`;
-      }).join('')||'<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted2)">אין נתונים</td></tr>'}
+      }).join('')||'<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--muted)">אין נתונים</td></tr>'}
       </tbody>
     </table>
   </div>`;
@@ -1437,12 +1837,17 @@ function saveTask(){
   const loc=document.getElementById('t-loc').value.trim();
   const contact=document.getElementById('t-owner').value.trim();
   const phone=document.getElementById('t-phone').value.trim();
-  if(!title||!prov){alert('כותרת ונותן שירות הם שדות חובה');return;}
+  if(!title){alert('כותרת היא שדה חובה');return;}
+  if(!prov){alert('בחר קטגוריה לדרישה');return;}
   if(!contact||!phone){alert('איש קשר וטלפון הם שדות חובה');return;}
   // שם המגיש — אוטומטי מהכניסה
   const submitter = document.getElementById('user-label').textContent;
   const editId=document.getElementById('t-edit-id').value;
-  const data={title,prov,prio:document.getElementById('t-prio').value||'רגיל',
+  const route = document.getElementById('t-route').value;
+  // אם קמב"ץ ניתב — prov מתעדכן לנותן השירות הסופי
+  const effectiveProv = (isAdmin() && route) ? route : prov;
+  const data={title,prov:effectiveProv,category:prov,route,
+    prio:document.getElementById('t-prio').value||'רגיל',
     loc,unit:document.getElementById('t-unit').value,desc:document.getElementById('t-desc').value,
     submitter,contact,phone,due:document.getElementById('t-due').value};
   if(editId){
@@ -1500,7 +1905,16 @@ function editVeh(id){
   document.getElementById('m-veh-title').textContent='🚗 עריכת רכב';
   document.getElementById('v-save-btn').textContent='עדכן רכב';
   document.getElementById('v-id').value=v.vid;
-  document.getElementById('v-type').value=v.type;
+  const knownTypes=['האמר','סופה','דוד','גמל מים','אמבולנס','רכב קל','משא'];
+  if(knownTypes.includes(v.type)){
+    document.getElementById('v-type').value=v.type;
+    document.getElementById('v-type-other').style.display='none';
+  } else {
+    document.getElementById('v-type').value='אחר';
+    document.getElementById('v-type-other').value=v.type;
+    document.getElementById('v-type-other').style.display='block';
+  }
+  document.getElementById('v-drive').value=v.drive||'';
   document.getElementById('v-status').value=v.status;
   document.getElementById('v-unit').value=v.unit||'';
   document.getElementById('v-km').value=v.km;
@@ -1523,6 +1937,9 @@ function editTask(id){
   document.getElementById('t-desc').value=t.desc||'';
   document.getElementById('t-owner').value=t.contact||t.owner||'';
   document.getElementById('t-phone').value=t.phone||'';
+  document.getElementById('t-route').value=t.route||'';
+  const routeWrap=document.getElementById('t-route-wrap');
+  if(routeWrap) routeWrap.style.display=isAdmin()?'block':'none';
   openM('m-task');
 }
 function editInv(id){
@@ -1574,7 +1991,12 @@ function saveVeh(){
   if(!canEditVeh()){alert('אין הרשאה לעריכת רכבים');return;}
   const vid=document.getElementById('v-id').value.trim();if(!vid)return;
   const editId=document.getElementById('v-edit-id').value;
-  const data={vid,type:document.getElementById('v-type').value,status:document.getElementById('v-status').value,
+  const typeVal = document.getElementById('v-type').value;
+  const typeOther = document.getElementById('v-type-other').value.trim();
+  const finalType = typeVal==='אחר' ? (typeOther||'אחר') : typeVal;
+  const data={vid,type:finalType,
+    drive:document.getElementById('v-drive').value,
+    status:document.getElementById('v-status').value,
     unit:document.getElementById('v-unit').value,km:parseInt(document.getElementById('v-km').value)||0,
     kmnext:parseInt(document.getElementById('v-kmnext').value)||500,
     driver:document.getElementById('v-driver').value,notes:document.getElementById('v-notes').value};
@@ -1675,25 +2097,25 @@ function assignedVehCard(v){
       <div class="vdot ${dot}" style="width:12px;height:12px"></div>
       <div style="flex:1">
         <div style="font-weight:700;font-size:14px">${v.vid} <span class="badge ${sb}">${v.status}</span></div>
-        <div class="cmeta"><span>${v.type}</span><span>נהג: ${v.driver||'—'}</span></div>
+        <div class="cmeta"><span>${v.type}${v.drive?' '+v.drive:''}</span><span>נהג: ${v.driver||'—'}</span></div>
       </div>
       ${canEditVeh()?`<button class="btn btn-s btn-xs" onclick="openReassign('${v.id}')">שנה הצמדה</button>`:''}
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px">
-      <div style="background:var(--s2);border-radius:6px;padding:8px;text-align:center">
-        <div style="color:var(--muted2);font-size:10px;margin-bottom:3px">ק״מ עדכני</div>
+      <div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center">
+        <div style="color:var(--muted);font-size:10px;margin-bottom:3px">ק״מ עדכני</div>
         <div style="font-weight:700">${v.km.toLocaleString()}</div>
       </div>
-      <div style="background:var(--s2);border-radius:6px;padding:8px;text-align:center">
-        <div style="color:var(--muted2);font-size:10px;margin-bottom:3px">לטיפול הבא</div>
+      <div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center">
+        <div style="color:var(--muted);font-size:10px;margin-bottom:3px">לטיפול הבא</div>
         <div style="font-weight:700;color:${warn?'var(--red)':'var(--text)'}">${kmLeft} ק״מ</div>
       </div>
-      <div style="background:var(--s2);border-radius:6px;padding:8px;text-align:center">
-        <div style="color:var(--muted2);font-size:10px;margin-bottom:3px">מוצמד ל</div>
+      <div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center">
+        <div style="color:var(--muted);font-size:10px;margin-bottom:3px">מוצמד ל</div>
         <div style="font-weight:700;font-size:11px">${v.unit||'—'}</div>
       </div>
     </div>
-    ${v.notes?`<div style="margin-top:8px;font-size:11px;color:var(--muted2);background:var(--s2);border-radius:6px;padding:7px">${v.notes}</div>`:''}
+    ${v.notes?`<div style="margin-top:8px;font-size:11px;color:var(--muted);background:var(--surface2);border-radius:6px;padding:7px">${v.notes}</div>`:''}
     ${canEditVeh()?`<div class="cact" style="margin-top:8px">
       <button class="btn btn-s btn-xs" onclick="updateKm('${v.id}')">עדכן ק״מ</button>
       <button class="btn btn-s btn-xs" onclick="cycleVeh('${v.id}')">${v.status==='כשיר'?'→ בטיפול':'→ כשיר'}</button>
