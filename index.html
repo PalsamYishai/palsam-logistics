@@ -1258,47 +1258,23 @@ function addDays(n){ const d=new Date();d.setDate(d.getDate()+n);return d.toISOS
 
 const DEFAULTS = {
   locations:[
-    {id:'l1', name:'מוצב מכבים',          type:'מוצב',   unit:''},
+    {id:'l1', name:'מוצב מכבים',        type:'מוצב',   unit:''},
     {id:'l2', name:'מוצב חשמונאים',      type:'מוצב',   unit:''},
     {id:'l3', name:'מבוא חורון',         type:'מוצב',   unit:''},
     {id:'l4', name:'החווה של אטינגר',    type:'מוצב',   unit:''},
-    {id:'l5', name:'מעוז צור',          type:'מוצב',   unit:''},
-    {id:'l6', name:'חוות אברהם',        type:'מוצב',   unit:''},
-    {id:'l7', name:'ציר יפיהפייה',      type:'ציר',    unit:''},
-    {id:'l8', name:'ציר אוסלו',        type:'ציר',    unit:''},
-    {id:'l9', name:'מחסום מכבים',      type:'מחסום',  unit:''},
-    {id:'l10',name:'מחסום בל',          type:'מחסום',  unit:''},
+    {id:'l5', name:'מעוז צור',           type:'מוצב',   unit:''},
+    {id:'l6', name:'חוות אברהם',         type:'מוצב',   unit:''},
+    {id:'l7', name:'ציר יפיהפייה',       type:'ציר',    unit:''},
+    {id:'l8', name:'ציר אוסלו',          type:'ציר',    unit:''},
+    {id:'l9', name:'מחסום מכבים',        type:'מחסום',  unit:''},
+    {id:'l10',name:'מחסום בל',           type:'מחסום',  unit:''},
     {id:'l11',name:'בסיס מטה',           type:'בסיס',   unit:'מפקדה'},
   ],
-  tasks:[
-    {id:'t1',title:'ניפוק תחמושת לפלוגה א׳',prov:'לוגיסטיקה',prio:'דחוף',status:'open',loc:'מוצב מכבים',unit:'פלגה א',desc:'350 כדורי חבאי + 8 מטאג',submitter:'רספ כהן',contact:'רספ כהן',phone:'050-1234567',due:today(),gid:'',created:Date.now()-3600000},
-    {id:'t2',title:'תיקון שטח — האמר 3',prov:'טנא',prio:'גבוה',status:'prog',loc:'מוצב מכבים',unit:'פלגה א',desc:'בעיה בהגה',submitter:'קצין רכב',contact:'קצין רכב',phone:'050-2345678',due:today(),gid:'',created:Date.now()-7200000},
-    {id:'t3',title:'השלמת מלאי מדים XL',prov:'לוגיסטיקה',prio:'רגיל',status:'open',loc:'בסיס מטה',unit:'מפקדה',desc:'חסר 4 סטים',submitter:'רספ',contact:'רספ',phone:'050-3456789',due:'',gid:'',created:Date.now()-86400000},
-    {id:'t4',title:'מסדר חולים שבועי',prov:'רפואה',prio:'רגיל',status:'open',loc:'מוצב מכבים',unit:'פלגה א',desc:'',submitter:'חובש',contact:'חובש',phone:'050-4567890',due:addDays(1),gid:'',created:Date.now()-1000000},
-    {id:'t5',title:'חלוקת שבת — מוצב מכבים',prov:'רבנות',prio:'גבוה',status:'open',loc:'מוצב מכבים',unit:'פלגה א',desc:'חלות, יין, פלטות',submitter:'רב',contact:'רב',phone:'050-5678901',due:addDays(2),gid:'',created:Date.now()-500000},
-  ],
-  trips:[
-    {id:'tr1',from:'בסיס מטה',to:'מוצב מכבים',date:today(),time:'08:00',veh:'האמר',pax:4,pur:'שינוע ציוד רפואי',req:'קרפ״ג',status:'confirmed',gid:''},
-    {id:'tr2',from:'בסיס מטה',to:'מוצב מכבים',date:today(),time:'08:30',veh:'רכב קל',pax:2,pur:'מסמכים + תחמושת',req:'קל״ג',status:'pending',gid:''},
-  ],
-  inventory:[
-    {id:'i1',name:'כדורי חבאי',cat:'תחמושת',unit:'יח\'',qty:320,min:350,loc:'בסיס מטה'},
-    {id:'i2',name:'מנות קרב',cat:'מזון',unit:'יח\'',qty:180,min:100,loc:'מוצב מכבים'},
-    {id:'i3',name:'דלק סולר',cat:'דלק',unit:'ליטר',qty:1400,min:500,loc:'בסיס מטה'},
-    {id:'i4',name:'תחבושות אישיות',cat:'רפואה',unit:'יח\'',qty:85,min:60,loc:'בסיס מטה'},
-  ],
-  vehicles:[
-    {id:'v1',vid:'האמר 1',type:'האמר',status:'כשיר',unit:'פלגה א',km:8200,kmnext:8700,driver:'דוד כ.',notes:''},
-    {id:'v2',vid:'האמר 2',type:'האמר',status:'בטיפול',unit:'פלגה ב',km:11900,kmnext:12000,driver:'שי מ.',notes:'קבע תור לסדנא'},
-    {id:'v3',vid:'סופה 1',type:'סופה',status:'כשיר',unit:'מפקדה',km:5400,kmnext:6200,driver:'אבי ל.',notes:''},
-    {id:'v4',vid:'אמבולנס',type:'אמבולנס',status:'כשיר',unit:'רפואה',km:3200,kmnext:5000,driver:'חובש',notes:''},
-  ],
-  tana:[
-    {id:'ta1',title:'בחינת נשקים — פלגה א',type:'נשק',date:addDays(3),unit:'פלגה א',status:'מתוכנן',notes:''},
-    {id:'ta2',title:'ימ״ט האמר 2',type:'רכב',date:addDays(1),unit:'האמר 2',status:'בביצוע',notes:'סדנא — ק״מ 11,900'},
-    {id:'ta3',title:'תיקון פנצ׳ר — סופה 2',type:'שטח',date:today(),unit:'סופה 2',status:'בביצוע',notes:'נקרא לשטח 07:30'},
-    {id:'ta4',title:'בדיקת אופטיקה + אמר״ל',type:'אופטיקה',date:addDays(5),unit:'פלגה ב',status:'מתוכנן',notes:''},
-  ],
+  tasks:     [],
+  trips:     [],
+  inventory: [],
+  vehicles:  [],
+  tana:      [],
 };
 
 function loadData(){
