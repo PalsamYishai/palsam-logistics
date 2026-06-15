@@ -491,6 +491,25 @@ body{
     window._firebaseReady = true;
     document.dispatchEvent(new Event('firebase-ready'));
   </script>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLm8QoQmms1odVF6QwT5byZNdMgbkEeqc",
+      authDomain: "plasam-1824.firebaseapp.com",
+      projectId: "plasam-1824",
+      storageBucket: "plasam-1824.firebasestorage.app",
+      messagingSenderId: "869600923706",
+      appId: "1:869600923706:web:0f96630661f566b4ede503"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window._db = db;
+    window._fbops = { doc, setDoc, getDoc, onSnapshot };
+    window._firebaseReady = true;
+    document.dispatchEvent(new Event('firebase-ready'));
+  </script>
 </head>
 <body>
 
@@ -532,48 +551,23 @@ body{
   <div class="login-desc">מערכת ניהול לוגיסטית מבצעית</div>
 
   <div class="login-card">
-
-    <!-- STEP 1: בחירת יחידה -->
-    <div class="login-step active" id="step1">
-      <div class="step-label">שלב 1 — בחר יחידה</div>
-      <!-- פלגות + אג"מ = מקבלי שירות -->
-      <div class="step-label" style="margin-bottom:8px">מקבלי שירות</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:8px">
-        <button class="unit-btn" onclick="pickUnit('פלגה א','company')"><div class="ui">א׳</div><div class="un">פלגה א'</div></button>
-        <button class="unit-btn" onclick="pickUnit('פלגה ב','company')"><div class="ui">ב׳</div><div class="un">פלגה ב'</div></button>
-        <button class="unit-btn" onclick="pickUnit('פלגה ג','company')"><div class="ui">ג׳</div><div class="un">פלגה ג'</div></button>
-        <button class="unit-btn" onclick="pickUnit('פלגה ד','company')"><div class="ui">ד׳</div><div class="un">פלגה ד'</div></button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px">
-        <button class="unit-btn" onclick="pickUnit('אגמ','staff')" style="grid-column:span 3;background:rgba(74,158,244,0.06);border-color:rgba(74,158,244,0.3)"><div class="ui">📋</div><div class="un">אג"מ</div></button>
-      </div>
-      <!-- מחלקות פלס"מ -->
-      <div class="step-label" style="margin-bottom:8px">מחלקות פלס״מ</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px">
-        <button class="unit-btn" onclick="pickUnit('מחלקת רכב','dept')"><div class="ui">🚗</div><div class="un">רכב</div></button>
-        <button class="unit-btn" onclick="pickUnit('מחלקת טנא','dept')"><div class="ui">🔧</div><div class="un">טנ"א</div></button>
-        <button class="unit-btn" onclick="pickUnit('מחלקת מטבח','dept')"><div class="ui">🍽️</div><div class="un">מטבח</div></button>
-        <button class="unit-btn" onclick="pickUnit('רפואה','dept')"><div class="ui">⚕️</div><div class="un">רפואה</div></button>
-        <button class="unit-btn" onclick="pickUnit('רבנות','dept')"><div class="ui">✡️</div><div class="un">רבנות</div></button>
-        <button class="unit-btn" onclick="pickUnit('לוגיסטיקה','dept')"><div class="ui">📦</div><div class="un">לוגיסטיקה</div></button>
-        <button class="unit-btn" onclick="pickUnit('קשר','dept')"><div class="ui">📻</div><div class="un">קשר</div><div class="ud">תחת אג״מ</div></button>
-        <button class="unit-btn" onclick="pickUnit('פלסמ','palsam')" style="grid-column:span 3;border-color:rgba(232,115,64,0.3);background:rgba(232,115,64,0.06)"><div class="ui">🪖</div><div class="un">פלס״מ כללי</div></button>
-      </div>
-      <!-- מטה -->
-      <div class="step-label" style="margin-bottom:8px">מטה ופיקוד</div>
-      <div style="display:grid;grid-template-columns:1fr;gap:7px">
-        <button class="unit-btn" onclick="pickUnit('חמל פלסמ קמבץ','kamatz')" style="border-color:rgba(232,115,64,0.4);background:rgba(232,115,64,0.07)"><div class="ui">⭐</div><div class="un">חמ״ל פלס״מ / קמב״ץ</div><div class="ud">ראות מלאה + ניהול</div></button>
-      </div>
+    <div class="step-label" style="margin-bottom:14px">כניסה למערכת</div>
+    <div class="fg">
+      <label class="fl">שם משתמש</label>
+      <input class="fi" id="login-username" placeholder="הקלד שם משתמש..."
+        autocomplete="off" autocapitalize="none" spellcheck="false"
+        onkeydown="if(event.key==='Enter')document.getElementById('login-password').focus()">
     </div>
-
-    <!-- STEP 2: בחירת תפקיד -->
-    <div class="login-step" id="step2">
-      <button class="back-btn" onclick="goBack()">← חזור</button>
-      <div class="step-label" id="step2-label">בחר תפקיד</div>
-      <div class="role-list" id="role-list"></div>
-      <button class="btn-login" id="btn-enter" disabled onclick="doLogin()">כניסה למערכת</button>
+    <div class="fg">
+      <label class="fl">סיסמא</label>
+      <input class="fi" type="password" id="login-password" placeholder="סיסמא..."
+        onkeydown="if(event.key==='Enter')tryLogin()">
     </div>
-
+    <div id="login-error" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none">⚠️ שם משתמש או סיסמא שגויים</div>
+    <button class="btn-login" onclick="tryLogin()">כניסה</button>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);text-align:center">
+      גדוד 1824 · אוגדה 96 · גזרת מכבים
+    </div>
   </div>
 </div>
 
@@ -992,6 +986,85 @@ body{
 </div>
 
 <script>
+// ═══ USERS ═══════════════════════════════
+const USERS = {"KAMBATZ": {"username": "KAMBATZ", "password": "1201", "name": "אלחנן נפש", "unit": "קמבץ מטה", "role": "kamatz", "unitType": "kamatz"}, "HAMAL1": {"username": "HAMAL1", "password": "1202", "name": "עזריאל שוורץ", "unit": "חמל פלסמ קמבץ", "role": "hamal", "unitType": "kamatz"}, "RASAP-A": {"username": "RASAP-A", "password": "1203", "name": "שרון ק + סהר ש", "unit": "פלגה א", "role": "rasp", "unitType": "company"}, "RASAP-B": {"username": "RASAP-B", "password": "1204", "name": "RASAP-B", "unit": "פלגה ב", "role": "rasp", "unitType": "company"}, "RASAP-G": {"username": "RASAP-G", "password": "1205", "name": "RASAP-G", "unit": "פלגה ג", "role": "rasp", "unitType": "company"}, "RASAP-D": {"username": "RASAP-D", "password": "1206", "name": "RASAP-D", "unit": "פלגה ד", "role": "rasp", "unitType": "company"}, "SMP-A": {"username": "SMP-A", "password": "1207", "name": "עומר", "unit": "פלגה א", "role": "smp", "unitType": "company"}, "SMP-B": {"username": "SMP-B", "password": "1208", "name": "SMP-B", "unit": "פלגה ב", "role": "smp", "unitType": "company"}, "SMP-G": {"username": "SMP-G", "password": "1209", "name": "SMP-G", "unit": "פלגה ג", "role": "smp", "unitType": "company"}, "SMP-D": {"username": "SMP-D", "password": "1210", "name": "SMP-D", "unit": "פלגה ד", "role": "smp", "unitType": "company"}, "RASAP -AGAM": {"username": "RASAP -AGAM", "password": "1211", "name": "מיקי שוורץ", "unit": "אגמ", "role": "rasp", "unitType": "staff"}, "MP-AGAM": {"username": "MP-AGAM", "password": "1212", "name": "אדיר מנצור", "unit": "אגמ", "role": "mfp", "unitType": "staff"}, "SHALEV-RECHEV": {"username": "SHALEV-RECHEV", "password": "1213", "name": "שליו", "unit": "מחלקת רכב", "role": "officer", "unitType": "dept"}, "SGAN-RECHEV": {"username": "SGAN-RECHEV", "password": "1214", "name": "SGAN-RECHEV", "unit": "מחלקת רכב", "role": "deputy", "unitType": "dept"}, "KTZIN-TENE": {"username": "KTZIN-TENE", "password": "1215", "name": "ארתור", "unit": "מחלקת טנא", "role": "officer", "unitType": "dept"}, "SGAN-TENE": {"username": "SGAN-TENE", "password": "1216", "name": "אלי לב", "unit": "מחלקת טנא", "role": "deputy", "unitType": "dept"}, "KTZIN MITBACH": {"username": "KTZIN MITBACH", "password": "1217", "name": "עודד סימן טוב", "unit": "מחלקת מטבח", "role": "officer", "unitType": "dept"}, "SGAN-MITBACH": {"username": "SGAN-MITBACH", "password": "1218", "name": "SGAN-MITBACH", "unit": "מחלקת מטבח", "role": "deputy", "unitType": "dept"}, "KTZIN-REFUAH": {"username": "KTZIN-REFUAH", "password": "1219", "name": "ישראל", "unit": "רפואה", "role": "officer", "unitType": "dept"}, "SGAN-REFUAH": {"username": "SGAN-REFUAH", "password": "1220", "name": "נועם", "unit": "רפואה", "role": "deputy", "unitType": "dept"}, "KTZIN-RABANUT": {"username": "KTZIN-RABANUT", "password": "1221", "name": "KTZIN-RABANUT", "unit": "רבנות", "role": "officer", "unitType": "dept"}, "KTZIN-LOG": {"username": "KTZIN-LOG", "password": "1222", "name": "עינב טלה", "unit": "לוגיסטיקה", "role": "officer", "unitType": "dept"}, "SGAN-LOG": {"username": "SGAN-LOG", "password": "1223", "name": "SGAN-LOG", "unit": "לוגיסטיקה", "role": "deputy", "unitType": "dept"}, "KTZIN-KESHER": {"username": "KTZIN-KESHER", "password": "1224", "name": "אפק", "unit": "קשר", "role": "officer", "unitType": "dept"}, "RASAP-PALSAM": {"username": "RASAP-PALSAM", "password": "1225", "name": "עומרי עמנואל", "unit": "פלסמ", "role": "rasp", "unitType": "palsam"}, "MP-PALSAM": {"username": "MP-PALSAM", "password": "1226", "name": "יונתן צ׳רקא", "unit": "פלסמ", "role": "mfp", "unitType": "palsam"}};
+
+function tryLogin(){
+  const username = document.getElementById('login-username').value.trim().toUpperCase();
+  const password = document.getElementById('login-password').value.trim();
+  const errEl = document.getElementById('login-error');
+  if(!username||!password){ errEl.style.display='block'; errEl.textContent='נא למלא שם משתמש וסיסמא'; return; }
+  const user = USERS[username];
+  if(!user||String(user.password)!==String(password)){
+    errEl.style.display='block';
+    errEl.textContent='שם משתמש או סיסמא שגויים';
+    document.getElementById('login-password').value='';
+    return;
+  }
+  errEl.style.display='none';
+  selUnit = user.unit;
+  selUnitType = user.unitType;
+  selRole = user.role;
+  doLogin(user.name);
+}
+
+// ═══ FIRESTORE ════════════════════════════
+async function persist(){
+  _localPersist();
+  if(!window._db) return;
+  const { doc, setDoc } = window._fbops;
+  const db = window._db;
+  try{
+    await Promise.all([
+      setDoc(doc(db,'data','tasks'),     {items:tasks}),
+      setDoc(doc(db,'data','trips'),     {items:trips}),
+      setDoc(doc(db,'data','inventory'), {items:inventory}),
+      setDoc(doc(db,'data','vehicles'),  {items:vehicles}),
+      setDoc(doc(db,'data','tana'),      {items:tanaItems}),
+      setDoc(doc(db,'data','locations'), {items:locations}),
+    ]);
+  } catch(e){ console.warn('Firestore write error',e); }
+}
+
+function _localPersist(){
+  localStorage.setItem('pl_t', JSON.stringify(tasks));
+  localStorage.setItem('pl_tr',JSON.stringify(trips));
+  localStorage.setItem('pl_i', JSON.stringify(inventory));
+  localStorage.setItem('pl_v', JSON.stringify(vehicles));
+  localStorage.setItem('pl_ta',JSON.stringify(tanaItems));
+  localStorage.setItem('pl_l', JSON.stringify(locations));
+}
+
+async function loadFromFirestore(){
+  if(!window._db){ loadData(); refreshAll(); return; }
+  const { doc, getDoc, onSnapshot } = window._fbops;
+  const db = window._db;
+  try{
+    const docs = await Promise.all([
+      getDoc(doc(db,'data','tasks')),
+      getDoc(doc(db,'data','trips')),
+      getDoc(doc(db,'data','inventory')),
+      getDoc(doc(db,'data','vehicles')),
+      getDoc(doc(db,'data','tana')),
+      getDoc(doc(db,'data','locations')),
+    ]);
+    tasks     = docs[0].exists() ? docs[0].data().items : DEFAULTS.tasks;
+    trips     = docs[1].exists() ? docs[1].data().items : DEFAULTS.trips;
+    inventory = docs[2].exists() ? docs[2].data().items : DEFAULTS.inventory;
+    vehicles  = docs[3].exists() ? docs[3].data().items : DEFAULTS.vehicles;
+    tanaItems = docs[4].exists() ? docs[4].data().items : DEFAULTS.tana;
+    locations = docs[5].exists() ? docs[5].data().items : DEFAULTS.locations;
+    // Real-time listeners
+    onSnapshot(doc(db,'data','tasks'),     d=>{ if(d.exists()){ tasks=d.data().items; renderTasks(); refreshDash(); } });
+    onSnapshot(doc(db,'data','trips'),     d=>{ if(d.exists()){ trips=d.data().items; renderTrips(); refreshDash(); } });
+    onSnapshot(doc(db,'data','vehicles'),  d=>{ if(d.exists()){ vehicles=d.data().items; renderVeh(); refreshDash(); } });
+    onSnapshot(doc(db,'data','tana'),      d=>{ if(d.exists()){ tanaItems=d.data().items; renderTana(); } });
+    onSnapshot(doc(db,'data','inventory'), d=>{ if(d.exists()){ inventory=d.data().items; renderInv(); } });
+    onSnapshot(doc(db,'data','locations'), d=>{ if(d.exists()){ locations=d.data().items; renderLocs(); buildSelects(); } });
+    refreshAll();
+  } catch(e){ console.warn('Firestore load error',e); loadData(); refreshAll(); }
+}
+
 // ═══ STATE ═══════════════════════════════
 let SESSION = { role:'', unit:'', unitType:'', name:'' };
 let tasks=[], trips=[], inventory=[], vehicles=[], tanaItems=[], locations=[];
@@ -1098,10 +1171,10 @@ function goBack(){
   document.getElementById('step1').classList.add('active');
 }
 
-function doLogin(){
+function doLogin(displayName){
   SESSION = { role:selRole, unit:selUnit, unitType:selUnitType, name:selUnit };
   const roleNames = {mfp:'מפ',smp:'סמפ',rasp:'רספ',officer:'קצין',deputy:'סגן',view:'קצין',hamal:'חמל פלסמ',kamatz:'קמבץ מטה'};
-  document.getElementById('user-label').textContent = (roleNames[selRole]||'') + ' — ' + selUnit;
+  document.getElementById('user-label').textContent = displayName || ((roleNames[selRole]||'') + ' — ' + selUnit);
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='flex';
   buildNav();
@@ -1119,6 +1192,9 @@ function doLogin(){
 function doLogout(){
   document.getElementById('login').style.display='flex';
   document.getElementById('app').style.display='none';
+  document.getElementById('login-username').value='';
+  document.getElementById('login-password').value='';
+  document.getElementById('login-error').style.display='none';
   document.getElementById('step2').classList.remove('active');
   document.getElementById('step1').classList.add('active');
   if(liveTimer) clearInterval(liveTimer);
