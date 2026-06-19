@@ -495,6 +495,8 @@ body{
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
+
     const firebaseConfig = {
       apiKey: "AIzaSyCLm8QoQmms1odVF6QwT5byZNdMgbkEeqc",
       authDomain: "plasam-1824.firebaseapp.com",
@@ -507,6 +509,46 @@ body{
     const db = getFirestore(app);
     window._db = db;
     window._fbops = { doc, setDoc, getDoc, onSnapshot };
+
+    // FCM setup
+    try {
+      const messaging = getMessaging(app);
+      window._messaging = messaging;
+      window._fcmGetToken = getToken;
+      window._fcmOnMessage = onMessage;
+      window._fcmVapidKey = 'BB0zfqfsHoCGo3Gq6sEw7t8EyepbmmYJwC5DDxVJ9SFHE7i7B5F4QDCgqh9ypJdvJG1KSDes3WNzF4tT2fXPQlo';
+    } catch(e) { console.warn('FCM init failed:', e); }
+
+    window._firebaseReady = true;
+    document.dispatchEvent(new Event('firebase-ready'));
+  </script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLm8QoQmms1odVF6QwT5byZNdMgbkEeqc",
+      authDomain: "plasam-1824.firebaseapp.com",
+      projectId: "plasam-1824",
+      storageBucket: "plasam-1824.firebasestorage.app",
+      messagingSenderId: "869600923706",
+      appId: "1:869600923706:web:0f96630661f566b4ede503"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window._db = db;
+    window._fbops = { doc, setDoc, getDoc, onSnapshot };
+
+    // FCM setup
+    try {
+      const messaging = getMessaging(app);
+      window._messaging = messaging;
+      window._fcmGetToken = getToken;
+      window._fcmOnMessage = onMessage;
+      window._fcmVapidKey = 'BB0zfqfsHoCGo3Gq6sEw7t8EyepbmmYJwC5DDxVJ9SFHE7i7B5F4QDCgqh9ypJdvJG1KSDes3WNzF4tT2fXPQlo';
+    } catch(e) { console.warn('FCM init failed:', e); }
+
     window._firebaseReady = true;
     document.dispatchEvent(new Event('firebase-ready'));
   </script>
@@ -563,7 +605,7 @@ body{
       <input class="fi" type="password" id="login-password" placeholder="סיסמא..."
         onkeydown="if(event.key==='Enter')tryLogin()">
     </div>
-    <div id="login-error" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none">⚠️ שם משתמש או סיסמא שגויים</div>
+    <div id="login-error" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none">שם משתמש או סיסמא שגויים</div>
     <button class="btn-login" onclick="tryLogin()">כניסה</button>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);text-align:center">
       גדוד 1824 · אוגדה 96 · גזרת מכבים
@@ -596,6 +638,8 @@ body{
       <button class="ntab" onclick="showTab('tana')" data-tab="tana">🔧 טנ״א</button>
       <button class="ntab" onclick="showTab('locs')" data-tab="locs">📍 מיקומים</button>
       <button class="ntab" onclick="showTab('rep')" data-tab="rep">📈 דוחות</button>
+      <button class="ntab" onclick="showTab('manpower')" data-tab="manpower">👥 כח"א</button>
+      <button class="ntab" onclick="showTab('jeeps')" data-tab="jeeps">🚙 טיוליות</button>
     </div>
   </div>
 
@@ -774,6 +818,42 @@ body{
     <div id="rep-content"></div>
   </div>
 </div>
+
+  <!-- MANPOWER -->
+  <div id="tab-manpower" class="page hidden">
+    <div class="ph">
+      <div><div class="pt">מצבת כח"א פלס"מ</div><div class="ps">נוכחות יומית</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-p btn-xs" onclick="openMNew('m-person')">+ איש</button>
+        <button class="btn btn-s btn-xs" onclick="exportManpowerCSV()">⬇️ CSV</button>
+      </div>
+    </div>
+    <div id="manpower-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px"></div>
+    <div class="stabs" id="mp-stabs">
+      <button class="stab active" onclick="fManpower('all',this)">הכל</button>
+      <button class="stab" onclick="fManpower('נוכח',this)">נוכח</button>
+      <button class="stab" onclick="fManpower('חולה',this)">חולה</button>
+      <button class="stab" onclick="fManpower('חופשה',this)">חופשה</button>
+      <button class="stab" onclick="fManpower('עצור בית',this)">עצור בית</button>
+    </div>
+    <div id="manpower-list"></div>
+  </div>
+
+  <!-- JEEPS -->
+  <div id="tab-jeeps" class="page hidden">
+    <div class="ph">
+      <div><div class="pt">ניהול טיוליות</div><div class="ps">שיוך למשימות · זמינות</div></div>
+      <button class="btn btn-p btn-xs" onclick="openMNew('m-jeep')">+ טיולית</button>
+    </div>
+    <div id="jeeps-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px"></div>
+    <div class="stabs" id="jeep-stabs">
+      <button class="stab active" onclick="fJeeps('all',this)">הכל</button>
+      <button class="stab" onclick="fJeeps('פנויה',this)">פנויה</button>
+      <button class="stab" onclick="fJeeps('בשימוש',this)">בשימוש</button>
+      <button class="stab" onclick="fJeeps('תחזוקה',this)">תחזוקה</button>
+    </div>
+    <div id="jeeps-list"></div>
+  </div>
 
 <!-- ════════ MODALS ════════ -->
 
@@ -970,6 +1050,68 @@ body{
   </div>
 </div>
 
+<!-- PERSON -->
+<div class="overlay" id="m-person">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="m-person-title">👤 הוסף איש</div><button class="mc" onclick="closeM('m-person')">X</button></div>
+    <input type="hidden" id="p-edit-id">
+    <div class="frow">
+      <div class="fg"><label class="fl">שם מלא <span class="req">*</span></label><input class="fi" id="p-name" placeholder="שם + שם משפחה"></div>
+      <div class="fg"><label class="fl">תפקיד</label><input class="fi" id="p-role" placeholder="מנהל רכב / נהג..."></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">מחלקה</label>
+        <select class="fs" id="p-unit">
+          <option value="">בחר...</option>
+          <option>מחלקת רכב</option><option>מחלקת טנא</option><option>מחלקת מטבח</option>
+          <option>רפואה</option><option>רבנות</option><option>לוגיסטיקה</option><option>קשר</option><option>מטה</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">סטטוס</label>
+        <select class="fs" id="p-status">
+          <option>נוכח</option><option>חולה</option><option>חופשה</option><option>עצור בית</option><option>אחר</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">הערה</label><input class="fi" id="p-note" placeholder="פרטים נוספים..."></div>
+    <input type="hidden" id="p-save-btn-mode" value="new">
+    <button class="btn-login" onclick="savePerson()">שמור</button>
+  </div>
+</div>
+
+<!-- JEEP -->
+<div class="overlay" id="m-jeep">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="m-jeep-title">🚙 טיולית</div><button class="mc" onclick="closeM('m-jeep')">X</button></div>
+    <input type="hidden" id="j-edit-id">
+    <div class="frow">
+      <div class="fg"><label class="fl">מספר / זיהוי <span class="req">*</span></label><input class="fi" id="j-id" placeholder="טיולית 1 / לוחית..."></div>
+      <div class="fg"><label class="fl">סוג</label>
+        <select class="fs" id="j-type"><option>האמר</option><option>סופה</option><option>4x4</option><option>4x2</option><option>אחר</option></select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">סטטוס</label>
+        <select class="fs" id="j-status"><option>פנויה</option><option>בשימוש</option><option>תחזוקה</option></select>
+      </div>
+      <div class="fg"><label class="fl">נהג</label><input class="fi" id="j-driver" placeholder="שם נהג"></div>
+    </div>
+    <div class="fg"><label class="fl">שיוך למשימה / אירוע</label><input class="fi" id="j-mission" placeholder="שם המשימה / יעד..."></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">יחידה מקבלת</label>
+        <select class="fs" id="j-unit">
+          <option value="">---</option>
+          <option>פלגה א</option><option>פלגה ב</option><option>פלגה ג</option><option>פלגה ד</option>
+          <option>מפקדה</option><option>פלסמ</option><option>אגמ</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">תאריך</label><input class="fi" type="date" id="j-date"></div>
+    </div>
+    <div class="fg"><label class="fl">הערות</label><textarea class="fta" id="j-notes"></textarea></div>
+    <button class="btn-login" id="j-save-btn" onclick="saveJeep()">שמור</button>
+  </div>
+</div>
+
 <!-- LOCATION -->
 <div class="overlay" id="m-loc">
   <div class="modal">
@@ -987,7 +1129,7 @@ body{
 
 <script>
 // ═══ USERS ═══════════════════════════════
-const USERS = {"KAMBATZ": {"username": "KAMBATZ", "password": "1201", "name": "אלחנן נפש", "unit": "קמבץ מטה", "role": "kamatz", "unitType": "kamatz"}, "HAMAL1": {"username": "HAMAL1", "password": "1202", "name": "עזריאל שוורץ", "unit": "חמל פלסמ קמבץ", "role": "hamal", "unitType": "kamatz"}, "RASAP-A": {"username": "RASAP-A", "password": "1203", "name": "שרון ק + סהר ש", "unit": "פלגה א", "role": "rasp", "unitType": "company"}, "RASAP-B": {"username": "RASAP-B", "password": "1204", "name": "RASAP-B", "unit": "פלגה ב", "role": "rasp", "unitType": "company"}, "RASAP-G": {"username": "RASAP-G", "password": "1205", "name": "RASAP-G", "unit": "פלגה ג", "role": "rasp", "unitType": "company"}, "RASAP-D": {"username": "RASAP-D", "password": "1206", "name": "RASAP-D", "unit": "פלגה ד", "role": "rasp", "unitType": "company"}, "SMP-A": {"username": "SMP-A", "password": "1207", "name": "עומר", "unit": "פלגה א", "role": "smp", "unitType": "company"}, "SMP-B": {"username": "SMP-B", "password": "1208", "name": "SMP-B", "unit": "פלגה ב", "role": "smp", "unitType": "company"}, "SMP-G": {"username": "SMP-G", "password": "1209", "name": "SMP-G", "unit": "פלגה ג", "role": "smp", "unitType": "company"}, "SMP-D": {"username": "SMP-D", "password": "1210", "name": "SMP-D", "unit": "פלגה ד", "role": "smp", "unitType": "company"}, "RASAP -AGAM": {"username": "RASAP -AGAM", "password": "1211", "name": "מיקי שוורץ", "unit": "אגמ", "role": "rasp", "unitType": "staff"}, "MP-AGAM": {"username": "MP-AGAM", "password": "1212", "name": "אדיר מנצור", "unit": "אגמ", "role": "mfp", "unitType": "staff"}, "SHALEV-RECHEV": {"username": "SHALEV-RECHEV", "password": "1213", "name": "שליו", "unit": "מחלקת רכב", "role": "officer", "unitType": "dept"}, "SGAN-RECHEV": {"username": "SGAN-RECHEV", "password": "1214", "name": "SGAN-RECHEV", "unit": "מחלקת רכב", "role": "deputy", "unitType": "dept"}, "KTZIN-TENE": {"username": "KTZIN-TENE", "password": "1215", "name": "ארתור", "unit": "מחלקת טנא", "role": "officer", "unitType": "dept"}, "SGAN-TENE": {"username": "SGAN-TENE", "password": "1216", "name": "אלי לב", "unit": "מחלקת טנא", "role": "deputy", "unitType": "dept"}, "KTZIN MITBACH": {"username": "KTZIN MITBACH", "password": "1217", "name": "עודד סימן טוב", "unit": "מחלקת מטבח", "role": "officer", "unitType": "dept"}, "SGAN-MITBACH": {"username": "SGAN-MITBACH", "password": "1218", "name": "SGAN-MITBACH", "unit": "מחלקת מטבח", "role": "deputy", "unitType": "dept"}, "KTZIN-REFUAH": {"username": "KTZIN-REFUAH", "password": "1219", "name": "ישראל", "unit": "רפואה", "role": "officer", "unitType": "dept"}, "SGAN-REFUAH": {"username": "SGAN-REFUAH", "password": "1220", "name": "נועם", "unit": "רפואה", "role": "deputy", "unitType": "dept"}, "KTZIN-RABANUT": {"username": "KTZIN-RABANUT", "password": "1221", "name": "KTZIN-RABANUT", "unit": "רבנות", "role": "officer", "unitType": "dept"}, "KTZIN-LOG": {"username": "KTZIN-LOG", "password": "1222", "name": "עינב טלה", "unit": "לוגיסטיקה", "role": "officer", "unitType": "dept"}, "SGAN-LOG": {"username": "SGAN-LOG", "password": "1223", "name": "SGAN-LOG", "unit": "לוגיסטיקה", "role": "deputy", "unitType": "dept"}, "KTZIN-KESHER": {"username": "KTZIN-KESHER", "password": "1224", "name": "אפק", "unit": "קשר", "role": "officer", "unitType": "dept"}, "RASAP-PALSAM": {"username": "RASAP-PALSAM", "password": "1225", "name": "עומרי עמנואל", "unit": "פלסמ", "role": "rasp", "unitType": "palsam"}, "MP-PALSAM": {"username": "MP-PALSAM", "password": "1226", "name": "יונתן צ׳רקא", "unit": "פלסמ", "role": "mfp", "unitType": "palsam"}};
+const USERS = {"KAMBATZ": {"username": "KAMBATZ", "password": "1201", "name": "אלחנן נפש", "unit": "קמבץ מטה", "role": "kamatz", "unitType": "kamatz"}, "HAMAL1": {"username": "HAMAL1", "password": "1202", "name": "עזריאל שוורץ", "unit": "חמל פלסמ קמבץ", "role": "hamal", "unitType": "kamatz"}, "RASAP-A": {"username": "RASAP-A", "password": "1203", "name": "שרון ק + סהר ש", "unit": "פלגה א", "role": "rasp", "unitType": "company"}, "RASAP-B": {"username": "RASAP-B", "password": "1204", "name": "RASAP-B", "unit": "פלגה ב", "role": "rasp", "unitType": "company"}, "RASAP-G": {"username": "RASAP-G", "password": "1205", "name": "RASAP-G", "unit": "פלגה ג", "role": "rasp", "unitType": "company"}, "RASAP-D": {"username": "RASAP-D", "password": "1206", "name": "RASAP-D", "unit": "פלגה ד", "role": "rasp", "unitType": "company"}, "SMP-A": {"username": "SMP-A", "password": "1207", "name": "עומר", "unit": "פלגה א", "role": "smp", "unitType": "company"}, "SMP-B": {"username": "SMP-B", "password": "1208", "name": "SMP-B", "unit": "פלגה ב", "role": "smp", "unitType": "company"}, "SMP-G": {"username": "SMP-G", "password": "1209", "name": "SMP-G", "unit": "פלגה ג", "role": "smp", "unitType": "company"}, "SMP-D": {"username": "SMP-D", "password": "1210", "name": "SMP-D", "unit": "פלגה ד", "role": "smp", "unitType": "company"}, "RASAP -AGAM": {"username": "RASAP -AGAM", "password": "1211", "name": "מיקי שוורץ", "unit": "אגמ", "role": "rasp", "unitType": "staff"}, "MP-AGAM": {"username": "MP-AGAM", "password": "1212", "name": "אדיר מנצור", "unit": "אגמ", "role": "mfp", "unitType": "staff"}, "SHALEV-RECHEV": {"username": "SHALEV-RECHEV", "password": "1213", "name": "שליו", "unit": "מחלקת רכב", "role": "officer", "unitType": "dept"}, "SGAN-RECHEV": {"username": "SGAN-RECHEV", "password": "1214", "name": "SGAN-RECHEV", "unit": "מחלקת רכב", "role": "deputy", "unitType": "dept"}, "KTZIN-TENE": {"username": "KTZIN-TENE", "password": "1215", "name": "ארתור", "unit": "מחלקת טנא", "role": "officer", "unitType": "dept"}, "SGAN-TENE": {"username": "SGAN-TENE", "password": "1216", "name": "אלי לב", "unit": "מחלקת טנא", "role": "deputy", "unitType": "dept"}, "KTZIN MITBACH": {"username": "KTZIN MITBACH", "password": "1217", "name": "עודד סימן טוב", "unit": "מחלקת מטבח", "role": "officer", "unitType": "dept"}, "SGAN-MITBACH": {"username": "SGAN-MITBACH", "password": "1218", "name": "SGAN-MITBACH", "unit": "מחלקת מטבח", "role": "deputy", "unitType": "dept"}, "KTZIN-REFUAH": {"username": "KTZIN-REFUAH", "password": "1219", "name": "ישראל", "unit": "רפואה", "role": "officer", "unitType": "dept"}, "SGAN-REFUAH": {"username": "SGAN-REFUAH", "password": "1220", "name": "נועם", "unit": "רפואה", "role": "deputy", "unitType": "dept"}, "KTZIN-RABANUT": {"username": "KTZIN-RABANUT", "password": "1221", "name": "KTZIN-RABANUT", "unit": "רבנות", "role": "officer", "unitType": "dept"}, "KTZIN-LOG": {"username": "KTZIN-LOG", "password": "1222", "name": "עינב טלה", "unit": "לוגיסטיקה", "role": "officer", "unitType": "dept"}, "SGAN-LOG": {"username": "SGAN-LOG", "password": "1223", "name": "SGAN-LOG", "unit": "לוגיסטיקה", "role": "deputy", "unitType": "dept"}, "KTZIN-KESHER": {"username": "KTZIN-KESHER", "password": "1224", "name": "אפק", "unit": "קשר", "role": "officer", "unitType": "dept"}, "RASAP-PALSAM": {"username": "RASAP-PALSAM", "password": "1225", "name": "עומרי עמנואל", "unit": "פלסמ", "role": "rasp", "unitType": "palsam"}, "MP-PALSAM": {"username": "MP-PALSAM", "password": "1226", "name": "יונתן צרקא", "unit": "פלסמ", "role": "mfp", "unitType": "palsam"}};
 
 function tryLogin(){
   const username = document.getElementById('login-username').value.trim().toUpperCase();
@@ -1065,9 +1207,98 @@ async function loadFromFirestore(){
   } catch(e){ console.warn('Firestore load error',e); loadData(); refreshAll(); }
 }
 
+const USERS_DATA = {"KAMBATZ": {"username": "KAMBATZ", "password": "1201", "name": "אלחנן נפש", "unit": "קמבץ מטה", "role": "kamatz", "unitType": "kamatz"}, "HAMAL1": {"username": "HAMAL1", "password": "1202", "name": "עזריאל שוורץ", "unit": "חמל פלסמ קמבץ", "role": "hamal", "unitType": "kamatz"}, "RASAP-A": {"username": "RASAP-A", "password": "1203", "name": "שרון ק + סהר ש", "unit": "פלגה א", "role": "rasp", "unitType": "company"}, "RASAP-B": {"username": "RASAP-B", "password": "1204", "name": "RASAP-B", "unit": "פלגה ב", "role": "rasp", "unitType": "company"}, "RASAP-G": {"username": "RASAP-G", "password": "1205", "name": "RASAP-G", "unit": "פלגה ג", "role": "rasp", "unitType": "company"}, "RASAP-D": {"username": "RASAP-D", "password": "1206", "name": "RASAP-D", "unit": "פלגה ד", "role": "rasp", "unitType": "company"}, "SMP-A": {"username": "SMP-A", "password": "1207", "name": "עומר", "unit": "פלגה א", "role": "smp", "unitType": "company"}, "SMP-B": {"username": "SMP-B", "password": "1208", "name": "SMP-B", "unit": "פלגה ב", "role": "smp", "unitType": "company"}, "SMP-G": {"username": "SMP-G", "password": "1209", "name": "SMP-G", "unit": "פלגה ג", "role": "smp", "unitType": "company"}, "SMP-D": {"username": "SMP-D", "password": "1210", "name": "SMP-D", "unit": "פלגה ד", "role": "smp", "unitType": "company"}, "RASAP -AGAM": {"username": "RASAP -AGAM", "password": "1211", "name": "מיקי שוורץ", "unit": "אגמ", "role": "rasp", "unitType": "staff"}, "MP-AGAM": {"username": "MP-AGAM", "password": "1212", "name": "אדיר מנצור", "unit": "אגמ", "role": "mfp", "unitType": "staff"}, "SHALEV-RECHEV": {"username": "SHALEV-RECHEV", "password": "1213", "name": "שליו", "unit": "מחלקת רכב", "role": "officer", "unitType": "dept"}, "SGAN-RECHEV": {"username": "SGAN-RECHEV", "password": "1214", "name": "SGAN-RECHEV", "unit": "מחלקת רכב", "role": "deputy", "unitType": "dept"}, "KTZIN-TENE": {"username": "KTZIN-TENE", "password": "1215", "name": "ארתור", "unit": "מחלקת טנא", "role": "officer", "unitType": "dept"}, "SGAN-TENE": {"username": "SGAN-TENE", "password": "1216", "name": "אלי לב", "unit": "מחלקת טנא", "role": "deputy", "unitType": "dept"}, "KTZIN MITBACH": {"username": "KTZIN MITBACH", "password": "1217", "name": "עודד סימן טוב", "unit": "מחלקת מטבח", "role": "officer", "unitType": "dept"}, "SGAN-MITBACH": {"username": "SGAN-MITBACH", "password": "1218", "name": "SGAN-MITBACH", "unit": "מחלקת מטבח", "role": "deputy", "unitType": "dept"}, "KTZIN-REFUAH": {"username": "KTZIN-REFUAH", "password": "1219", "name": "ישראל", "unit": "רפואה", "role": "officer", "unitType": "dept"}, "SGAN-REFUAH": {"username": "SGAN-REFUAH", "password": "1220", "name": "נועם", "unit": "רפואה", "role": "deputy", "unitType": "dept"}, "KTZIN-RABANUT": {"username": "KTZIN-RABANUT", "password": "1221", "name": "KTZIN-RABANUT", "unit": "רבנות", "role": "officer", "unitType": "dept"}, "KTZIN-LOG": {"username": "KTZIN-LOG", "password": "1222", "name": "עינב טלה", "unit": "לוגיסטיקה", "role": "officer", "unitType": "dept"}, "SGAN-LOG": {"username": "SGAN-LOG", "password": "1223", "name": "SGAN-LOG", "unit": "לוגיסטיקה", "role": "deputy", "unitType": "dept"}, "KTZIN-KESHER": {"username": "KTZIN-KESHER", "password": "1224", "name": "אפק", "unit": "קשר", "role": "officer", "unitType": "dept"}, "RASAP-PALSAM": {"username": "RASAP-PALSAM", "password": "1225", "name": "עומרי עמנואל", "unit": "פלסמ", "role": "rasp", "unitType": "palsam"}, "MP-PALSAM": {"username": "MP-PALSAM", "password": "1226", "name": "יונתן צרקא", "unit": "פלסמ", "role": "mfp", "unitType": "palsam"}};
+
+function tryLogin(){
+  var username = document.getElementById('login-username').value.trim().toUpperCase();
+  var password = document.getElementById('login-password').value.trim();
+  var errEl = document.getElementById('login-error');
+  if(!username||!password){ errEl.style.display='block'; errEl.textContent='נא למלא שם משתמש וסיסמא'; return; }
+  var user = USERS_DATA[username];
+  if(!user||String(user.password)!==String(password)){
+    errEl.style.display='block';
+    errEl.textContent='שם משתמש או סיסמא שגויים';
+    document.getElementById('login-password').value='';
+    return;
+  }
+  errEl.style.display='none';
+  selUnit = user.unit;
+  selUnitType = user.unitType;
+  selRole = user.role;
+  doLogin(user.name);
+}
+
+function _localPersist(){
+  localStorage.setItem('pl_t', JSON.stringify(tasks));
+  localStorage.setItem('pl_tr',JSON.stringify(trips));
+  localStorage.setItem('pl_i', JSON.stringify(inventory));
+  localStorage.setItem('pl_v', JSON.stringify(vehicles));
+  localStorage.setItem('pl_ta',JSON.stringify(tanaItems));
+  localStorage.setItem('pl_l', JSON.stringify(locations));
+  localStorage.setItem('pl_mp',JSON.stringify(manpower));
+  localStorage.setItem('pl_j', JSON.stringify(jeeps));
+}
+
+async function persist(){
+  _localPersist();
+  if(!window._db) return;
+  var fbdb = window._db;
+  var fbdoc = window._fbops.doc;
+  var fbset = window._fbops.setDoc;
+  try{
+    await Promise.all([
+      fbset(fbdoc(fbdb,'data','tasks'),     {items:tasks}),
+      fbset(fbdoc(fbdb,'data','trips'),     {items:trips}),
+      fbset(fbdoc(fbdb,'data','inventory'), {items:inventory}),
+      fbset(fbdoc(fbdb,'data','vehicles'),  {items:vehicles}),
+      fbset(fbdoc(fbdb,'data','tana'),      {items:tanaItems}),
+      fbset(fbdoc(fbdb,'data','locations'), {items:locations}),
+      fbset(fbdoc(fbdb,'data','manpower'),  {items:manpower}),
+      fbset(fbdoc(fbdb,'data','jeeps'),     {items:jeeps}),
+    ]);
+  }catch(e){ console.warn('Firestore write error',e); }
+}
+
+async function loadFromFirestore(){
+  if(!window._db){ loadData(); refreshAll(); return; }
+  var fbdb = window._db;
+  var fbdoc = window._fbops.doc;
+  var fbget = window._fbops.getDoc;
+  var fbsnap = window._fbops.onSnapshot;
+  try{
+    var docs = await Promise.all([
+      fbget(fbdoc(fbdb,'data','tasks')),
+      fbget(fbdoc(fbdb,'data','trips')),
+      fbget(fbdoc(fbdb,'data','inventory')),
+      fbget(fbdoc(fbdb,'data','vehicles')),
+      fbget(fbdoc(fbdb,'data','tana')),
+      fbget(fbdoc(fbdb,'data','locations')),
+      fbget(fbdoc(fbdb,'data','manpower')),
+      fbget(fbdoc(fbdb,'data','jeeps')),
+    ]);
+    tasks     = docs[0].exists() ? docs[0].data().items : DEFAULTS.tasks;
+    trips     = docs[1].exists() ? docs[1].data().items : DEFAULTS.trips;
+    inventory = docs[2].exists() ? docs[2].data().items : DEFAULTS.inventory;
+    vehicles  = docs[3].exists() ? docs[3].data().items : DEFAULTS.vehicles;
+    tanaItems = docs[4].exists() ? docs[4].data().items : DEFAULTS.tana;
+    locations = docs[5].exists() ? docs[5].data().items : DEFAULTS.locations;
+    manpower  = docs[6].exists() ? docs[6].data().items : DEFAULTS.manpower;
+    jeeps     = docs[7].exists() ? docs[7].data().items : DEFAULTS.jeeps;
+    fbsnap(fbdoc(fbdb,'data','tasks'),     function(d){ if(d.exists()){tasks=d.data().items;renderTasks();refreshDash();}});
+    fbsnap(fbdoc(fbdb,'data','trips'),     function(d){ if(d.exists()){trips=d.data().items;renderTrips();refreshDash();}});
+    fbsnap(fbdoc(fbdb,'data','vehicles'),  function(d){ if(d.exists()){vehicles=d.data().items;renderVeh();refreshDash();}});
+    fbsnap(fbdoc(fbdb,'data','tana'),      function(d){ if(d.exists()){tanaItems=d.data().items;renderTana();}});
+    fbsnap(fbdoc(fbdb,'data','inventory'), function(d){ if(d.exists()){inventory=d.data().items;renderInv();}});
+    fbsnap(fbdoc(fbdb,'data','locations'), function(d){ if(d.exists()){locations=d.data().items;renderLocs();buildSelects();}});
+    fbsnap(fbdoc(fbdb,'data','manpower'),  function(d){ if(d.exists()){manpower=d.data().items;renderManpower();}});
+    fbsnap(fbdoc(fbdb,'data','jeeps'),     function(d){ if(d.exists()){jeeps=d.data().items;renderJeeps();}});
+    refreshAll();
+  }catch(e){ console.warn('Firestore load error',e); loadData(); refreshAll(); }
+}
+
 // ═══ STATE ═══════════════════════════════
 let SESSION = { role:'', unit:'', unitType:'', name:'' };
-let tasks=[], trips=[], inventory=[], vehicles=[], tanaItems=[], locations=[];
+let tasks=[], trips=[], inventory=[], vehicles=[], tanaItems=[], locations=[], manpower=[], jeeps=[];
 let tFilter='all', iFilter='all', vFilter='all', taFilter='all', curPeriod='day';
 
 // ═══ ROLE DEFINITIONS ════════════════════
@@ -1081,7 +1312,7 @@ const ROLES = {
     { id:'deputy',  icon:'🎖️', name:'סגן קצין',   desc:'עדכון וביצוע' },
   ],
   staff: [
-    { id:'mfp',  icon:'⭐', name:'מפ אגמ',  desc:'צפייה בדרישות אג״מ' },
+    { id:'mfp',  icon:'⭐', name:'מפ אגמ',  desc:'צפייה בדרישות אגמ' },
     { id:'rasp', icon:'🪖', name:'רספ אגמ', desc:'הגשת דרישות ומעקב' },
   ],
   hamal: [ { id:'hamal', icon:'📡', name:'חמל פלסמ', desc:'ראות מלאה + מעקב' } ],
@@ -1187,11 +1418,16 @@ function doLogin(displayName){
     document.addEventListener('firebase-ready', ()=>loadFromFirestore(), {once:true});
   }
   startLive();
+  // Init push notifications
+  setTimeout(function(){ initNotifications(); checkNotifications(); }, 1500);
 }
 
 function doLogout(){
   document.getElementById('login').style.display='flex';
   document.getElementById('app').style.display='none';
+  document.getElementById('login-username').value='';
+  document.getElementById('login-password').value='';
+  document.getElementById('login-error').style.display='none';
   document.getElementById('login-username').value='';
   document.getElementById('login-password').value='';
   document.getElementById('login-error').style.display='none';
@@ -1209,6 +1445,7 @@ function buildNav(){
   tabs.forEach(t=>t.classList.remove('hidden'));
   // Department-specific
   if(SESSION.unitType==='dept'){
+    hide('manpower'); hide('jeeps');
     hide('veh'); hide('tana');
     if(SESSION.unit==='מחלקת רכב') show('veh');
     if(SESSION.unit==='מחלקת טנא'){ show('tana'); show('veh'); }
@@ -1217,7 +1454,7 @@ function buildNav(){
     show('rep');
   }
   if(SESSION.unitType==='company'){
-    hide('veh'); hide('tana'); hide('inv'); hide('rep');
+    hide('veh'); hide('tana'); hide('inv'); hide('rep'); hide('manpower'); hide('jeeps');
     setTimeout(()=>{
       const addTaskBtn=document.getElementById('add-task-btn');
       const addTripBtn=document.getElementById('add-trip-btn');
@@ -1233,7 +1470,7 @@ function buildNav(){
     if(SESSION.role==='rasp') hide('rep');
   }
   if(SESSION.unitType==='staff'){
-    hide('veh'); hide('tana'); hide('inv'); hide('rep');
+    hide('veh'); hide('tana'); hide('inv'); hide('rep'); hide('manpower'); hide('jeeps');
     setTimeout(()=>{
       const addTaskBtn=document.getElementById('add-task-btn');
       const addTripBtn=document.getElementById('add-trip-btn');
@@ -1275,6 +1512,8 @@ const DEFAULTS = {
   inventory: [],
   vehicles:  [],
   tana:      [],
+  manpower:  [],
+  jeeps:     [],
 };
 
 function loadData(){
@@ -1284,6 +1523,8 @@ function loadData(){
   vehicles  = JSON.parse(localStorage.getItem('pl_v')||'null')  || DEFAULTS.vehicles;
   tanaItems = JSON.parse(localStorage.getItem('pl_ta')||'null') || DEFAULTS.tana;
   locations = JSON.parse(localStorage.getItem('pl_l')||'null')  || DEFAULTS.locations;
+  manpower  = JSON.parse(localStorage.getItem('pl_mp')||'null') || DEFAULTS.manpower;
+  jeeps     = JSON.parse(localStorage.getItem('pl_j')||'null')  || DEFAULTS.jeeps;
 }
 // ═══ FIRESTORE DATA LAYER ══════════════════
 const COLLECTIONS = {
@@ -1391,7 +1632,7 @@ function showTab(tab){
   const map={dash:refreshDash,tasks:renderTasks,trips:()=>{renderAssignedVeh();},inv:()=>{buildInvTabs();renderInv();},veh:renderVeh,tana:renderTana,locs:renderLocs,rep:renderRep};
   if(map[tab]) map[tab]();
 }
-function refreshAll(){ buildSelects();refreshDash();renderTasks();renderAssignedVeh();renderTrips();renderInv();renderVeh();renderTana();renderLocs(); }
+function refreshAll(){ buildSelects();refreshDash();renderTasks();renderAssignedVeh();renderTrips();renderInv();renderVeh();renderTana();renderLocs();renderManpower();renderJeeps(); }
 
 // ═══ DASHBOARD ═══════════════════════════
 function refreshDash(){
@@ -2103,6 +2344,18 @@ function editInv(id){
 }
 // Reset modals to "new" mode when opened fresh
 function openMNew(id){
+  if(id==='m-person'){
+    document.getElementById('p-edit-id').value='';
+    document.getElementById('m-person-title').textContent='הוסף איש';
+    ['p-name','p-role','p-note'].forEach(function(f){document.getElementById(f).value='';});
+  }
+  if(id==='m-jeep'){
+    document.getElementById('j-edit-id').value='';
+    document.getElementById('m-jeep-title').textContent='טיולית חדשה';
+    document.getElementById('j-save-btn').textContent='שמור';
+    ['j-id','j-driver','j-mission','j-notes'].forEach(function(f){document.getElementById(f).value='';});
+    document.getElementById('j-date').value='';
+  }
   if(id==='m-veh'){
     document.getElementById('v-edit-id').value='';
     document.getElementById('m-veh-title').textContent='🚗 רכב חדש';
@@ -2290,6 +2543,305 @@ function updateKm(id){
   if(newKm && !isNaN(newKm) && parseInt(newKm) >= v.km){
     v.km = parseInt(newKm); persist(); renderAssignedVeh(); renderVeh(); refreshDash();
   } else if(newKm){ alert('ק״מ לא תקין'); }
+}
+
+// ═══ MANPOWER ════════════════════════════
+var mpFilter = 'all';
+
+function renderManpower(){
+  var list = mpFilter==='all' ? manpower : manpower.filter(function(p){return p.status===mpFilter;});
+  var total=manpower.length, present=manpower.filter(function(p){return p.status==='נוכח';}).length;
+  var sick=manpower.filter(function(p){return p.status==='חולה';}).length;
+  var absent=total-present;
+  document.getElementById('manpower-summary').innerHTML =
+    '<div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--navy);border-radius:var(--r);padding:11px;text-align:center"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">סהכ</div><div style="font-size:22px;font-weight:700;color:var(--navy)">'+total+'</div></div>' +
+    '<div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--green);border-radius:var(--r);padding:11px;text-align:center"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">נוכחים</div><div style="font-size:22px;font-weight:700;color:var(--green)">'+present+'</div></div>' +
+    '<div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--yellow);border-radius:var(--r);padding:11px;text-align:center"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">חולים</div><div style="font-size:22px;font-weight:700;color:var(--yellow)">'+sick+'</div></div>' +
+    '<div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--red);border-radius:var(--r);padding:11px;text-align:center"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">חופשות/אחר</div><div style="font-size:22px;font-weight:700;color:var(--red)">'+(absent-sick)+'</div></div>';
+  if(!list.length){document.getElementById('manpower-list').innerHTML=empty('👥','אין אנשים');return;}
+  var mpHtml = '';
+  list.forEach(function(p){
+    var opts = ['נוכח','חולה','חופשה','עצור בית','אחר'].map(function(s){
+      return '<option value="'+s+'"'+(p.status===s?' selected':'')+'>'+s+'</option>';
+    }).join('');
+    var actions = canEdit() ?
+      '<button class="btn btn-s btn-xs" onclick="editPersonBtn(this)" data-id="'+p.id+'">ערוך</button>' +
+      '<button class="btn btn-d btn-xs" onclick="delPersonBtn(this)" data-id="'+p.id+'">מחק</button>' : '';
+    mpHtml += '<div class="card">' +
+      '<div class="ct"><div class="cl"><div>' +
+      '<div class="ctitle">'+p.name+'</div>' +
+      '<div class="cmeta">'+(p.role?'<span>'+p.role+'</span>':'')+(p.unit?'<span>'+p.unit+'</span>':'')+'</div>' +
+      '</div></div>' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+      '<select class="fs" style="font-size:11px;padding:4px 8px;height:auto;width:auto;border-radius:4px" data-id="'+p.id+'" onchange="updatePersonStatus(this.dataset.id,this.value)">'+opts+'</select>' +
+      actions + '</div></div></div>';
+  });
+  document.getElementById('manpower-list').innerHTML = mpHtml;
+}
+
+function fManpower(f,el){mpFilter=f;document.querySelectorAll('#mp-stabs .stab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');renderManpower();}
+function updatePersonStatus(id,status){var p=manpower.find(function(x){return x.id===id;});if(p){p.status=status;persist();renderManpower();}}
+
+function savePerson(){
+  var name=document.getElementById('p-name').value.trim();
+  if(!name){alert('שם הוא שדה חובה');return;}
+  var editId=document.getElementById('p-edit-id').value;
+  var data={name:name,role:document.getElementById('p-role').value,
+    unit:document.getElementById('p-unit').value,
+    status:document.getElementById('p-status').value,
+    note:document.getElementById('p-note').value};
+  if(editId){var idx=manpower.findIndex(function(x){return x.id===editId;});if(idx>=0)manpower[idx]=Object.assign({},manpower[idx],data);}
+  else{manpower.push(Object.assign({id:uid()},data));}
+  persist();renderManpower();closeM('m-person');
+  ['p-name','p-role','p-note'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('p-edit-id').value='';
+}
+
+function editPersonBtn(el){ editPerson(el.dataset.id); }
+function editPerson(id){
+  var p=manpower.find(function(x){return x.id===id;});if(!p)return;
+  document.getElementById('p-edit-id').value=id;
+  document.getElementById('m-person-title').textContent='עריכת איש';
+  document.getElementById('p-name').value=p.name;
+  document.getElementById('p-role').value=p.role||'';
+  document.getElementById('p-unit').value=p.unit||'';
+  document.getElementById('p-status').value=p.status||'נוכח';
+  document.getElementById('p-note').value=p.note||'';
+  openM('m-person');
+}
+
+function delPersonBtn(el){ delPerson(el.dataset.id); }
+function delPerson(id){if(!confirm('מחק?'))return;manpower=manpower.filter(function(x){return x.id!==id;});persist();renderManpower();}
+
+function exportManpowerCSV(){
+  var h='שם,תפקיד,מחלקה,סטטוס,הערה';
+  var rows=manpower.map(function(p){return['"'+p.name+'"',p.role||'',p.unit||'',p.status,p.note||''].join(',');});
+  var csv='\uFEFF'+h+'\n'+rows.join('\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='כחא_'+new Date().toLocaleDateString('he-IL').replace(/\//g,'-')+'.csv';a.click();
+}
+
+// ═══ JEEPS ═══════════════════════════════
+var jeepFilter = 'all';
+
+function renderJeeps(){
+  var list = jeepFilter==='all' ? jeeps : jeeps.filter(function(j){return j.status===jeepFilter;});
+  var total=jeeps.length,free=jeeps.filter(function(j){return j.status==='פנויה';}).length;
+  var busy=jeeps.filter(function(j){return j.status==='בשימוש';}).length;
+  var maint=jeeps.filter(function(j){return j.status==='תחזוקה';}).length;
+  document.getElementById('jeeps-summary').innerHTML =
+    '<div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--green);border-radius:var(--r);padding:11px;text-align:center"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">פנויות</div><div style="font-size:22px;font-weight:700;color:var(--green)">'+free+'/'+total+'</div></div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--accent);border-radius:var(--r);padding:11px;text-align:center"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">בשימוש</div><div style="font-size:22px;font-weight:700;color:var(--accent)">'+busy+'</div></div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--yellow);border-radius:var(--r);padding:11px;text-align:center"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">תחזוקה</div><div style="font-size:22px;font-weight:700;color:var(--yellow)">'+maint+'</div></div>';
+  if(!list.length){document.getElementById('jeeps-list').innerHTML=empty('🚙','אין טיוליות');return;}
+  var jHtml = '';
+  list.forEach(function(j){
+    var sc={'פנויה':'var(--green)','בשימוש':'var(--accent)','תחזוקה':'var(--yellow)'};
+    var opts=['פנויה','בשימוש','תחזוקה'].map(function(s){return '<option'+(j.status===s?' selected':'')+'>'+s+'</option>';}).join('');
+    var actions = canEdit() ?
+      '<button class="btn btn-s btn-xs" onclick="editJeepBtn(this)" data-id="'+j.id+'">ערוך</button>' +
+      '<button class="btn btn-d btn-xs" onclick="delJeepBtn(this)" data-id="'+j.id+'">מחק</button>' : '';
+    jHtml += '<div class="card"><div class="ct"><div class="cl">' +
+      '<div style="width:8px;height:8px;border-radius:50%;background:'+(sc[j.status]||'var(--muted)')+';margin-top:5px;flex-shrink:0"></div>' +
+      '<div style="flex:1"><div class="ctitle">'+j.vid+' <span style="font-size:11px;color:var(--muted);font-weight:400">'+j.type+'</span></div>' +
+      '<div class="cmeta">'+(j.driver?'<span>נהג: '+j.driver+'</span>':'')+(j.unit?'<span>'+j.unit+'</span>':'')+(j.mission?'<span style="color:var(--accent)">'+j.mission+'</span>':'')+'</div>' +
+      '</div></div>' +
+      '<span class="badge" style="border-color:'+(sc[j.status]||'var(--border)')+';color:'+(sc[j.status]||'var(--muted)')+';flex-shrink:0">'+j.status+'</span>' +
+      '</div><div class="cact">' +
+      '<select class="fs" style="font-size:11px;padding:4px 8px;height:auto;width:auto;border-radius:4px" data-id="'+j.id+'" onchange="updateJeepStatus(this.dataset.id,this.value)">'+opts+'</select>' +
+      actions + '</div></div>';
+  });
+  document.getElementById('jeeps-list').innerHTML = jHtml;
+}
+
+function fJeeps(f,el){jeepFilter=f;document.querySelectorAll('#jeep-stabs .stab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');renderJeeps();}
+function updateJeepStatus(id,status){var j=jeeps.find(function(x){return x.id===id;});if(j){j.status=status;persist();renderJeeps();}}
+
+function saveJeep(){
+  var vid=document.getElementById('j-id').value.trim();if(!vid){alert('זיהוי הוא שדה חובה');return;}
+  var editId=document.getElementById('j-edit-id').value;
+  var data={vid:vid,type:document.getElementById('j-type').value,
+    status:document.getElementById('j-status').value,
+    driver:document.getElementById('j-driver').value,
+    mission:document.getElementById('j-mission').value,
+    unit:document.getElementById('j-unit').value,
+    date:document.getElementById('j-date').value,
+    notes:document.getElementById('j-notes').value};
+  if(editId){var idx=jeeps.findIndex(function(x){return x.id===editId;});if(idx>=0)jeeps[idx]=Object.assign({},jeeps[idx],data);}
+  else{jeeps.push(Object.assign({id:uid()},data));}
+  persist();renderJeeps();closeM('m-jeep');
+  ['j-id','j-driver','j-mission','j-notes'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('j-edit-id').value='';document.getElementById('j-date').value='';
+}
+
+function editJeepBtn(el){ editJeep(el.dataset.id); }
+function delJeepBtn(el){ delJeep(el.dataset.id); }
+function editJeep(id){
+  var j=jeeps.find(function(x){return x.id===id;});if(!j)return;
+  document.getElementById('j-edit-id').value=id;
+  document.getElementById('m-jeep-title').textContent='עריכת טיולית';
+  document.getElementById('j-id').value=j.vid;
+  document.getElementById('j-type').value=j.type||'האמר';
+  document.getElementById('j-status').value=j.status||'פנויה';
+  document.getElementById('j-driver').value=j.driver||'';
+  document.getElementById('j-mission').value=j.mission||'';
+  document.getElementById('j-unit').value=j.unit||'';
+  document.getElementById('j-date').value=j.date||'';
+  document.getElementById('j-notes').value=j.notes||'';
+  openM('m-jeep');
+}
+
+function delJeep(id){if(!confirm('מחק?'))return;jeeps=jeeps.filter(function(x){return x.id!==id;});persist();renderJeeps();}
+
+// ═══ PUSH NOTIFICATIONS ══════════════════
+var _fcmToken = null;
+
+async function initNotifications() {
+  if(!('Notification' in window)) return;
+  if(!window._messaging) return;
+
+  // Register service worker
+  try {
+    var reg = await navigator.serviceWorker.register('/palsam-logistics/firebase-messaging-sw.js');
+    console.log('SW registered');
+
+    // Request permission
+    var perm = await Notification.requestPermission();
+    if(perm !== 'granted') { console.log('Notification denied'); return; }
+
+    // Get FCM token
+    var token = await window._fcmGetToken(window._messaging, {
+      vapidKey: window._fcmVapidKey,
+      serviceWorkerRegistration: reg
+    });
+    if(token) {
+      _fcmToken = token;
+      // Save token to Firestore linked to this user session
+      if(window._db && SESSION.role) {
+        var fbdoc = window._fbops.doc;
+        var fbset = window._fbops.setDoc;
+        var db = window._db;
+        await fbset(fbdoc(db, 'tokens', SESSION.role + '_' + SESSION.unit.replace(/[^a-zA-Z0-9]/g,'')), {
+          token: token,
+          role: SESSION.role,
+          unit: SESSION.unit,
+          unitType: SESSION.unitType,
+          updatedAt: Date.now()
+        });
+        console.log('FCM token saved');
+      }
+    }
+
+    // Handle foreground messages
+    window._fcmOnMessage(window._messaging, function(payload) {
+      var n = payload.notification || {};
+      showInAppNotif(n.title || 'עדכון', n.body || '');
+    });
+
+  } catch(e) { console.warn('Notifications setup failed:', e); }
+}
+
+function showInAppNotif(title, body) {
+  var el = document.getElementById('notif-toast');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'notif-toast';
+    el.style.cssText = 'position:fixed;top:60px;right:16px;left:16px;max-width:360px;margin:0 auto;background:var(--navy);color:white;border-radius:10px;padding:12px 16px;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity 0.3s;font-size:13px;direction:rtl';
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '<div style="font-weight:600;margin-bottom:3px">' + title + '</div><div style="opacity:0.8">' + body + '</div>';
+  el.style.opacity = '1';
+  el.style.display = 'block';
+  setTimeout(function() { el.style.opacity='0'; setTimeout(function(){el.style.display='none';},300); }, 4000);
+}
+
+// Send notification to relevant users via Firestore trigger
+// We store notification requests in Firestore — a background function would send them
+// For now: store in 'notifications' collection and check on load
+async function sendNotifRequest(targetRole, targetUnit, title, body, tag) {
+  if(!window._db) return;
+  var fbdoc = window._fbops.doc;
+  var fbset = window._fbops.setDoc;
+  var db = window._db;
+  try {
+    await fbset(fbdoc(db, 'notifications', 'n_' + Date.now()), {
+      targetRole: targetRole || '',
+      targetUnit: targetUnit || '',
+      title: title,
+      body: body,
+      tag: tag || 'update',
+      sentAt: Date.now(),
+      read: false
+    });
+  } catch(e) { console.warn('notif send failed', e); }
+}
+
+// Check for new notifications for this user
+async function checkNotifications() {
+  if(!window._db || !SESSION.role) return;
+  // In-app notification check from Firestore
+  var fbdoc = window._fbops.doc;
+  var fbsnap = window._fbops.onSnapshot;
+  var db = window._db;
+  // Listen for notifications targeted at this role/unit
+  fbsnap(fbdoc(db, 'notifState', SESSION.role + '_' + (SESSION.unit||'').replace(/[^a-zA-Z0-9]/g,'')), function(d) {
+    if(d.exists()) {
+      var data = d.data();
+      if(data.msg && data.ts > (window._lastNotifTs || 0)) {
+        window._lastNotifTs = data.ts;
+        showInAppNotif(data.title || 'עדכון', data.msg);
+        // Also show browser notification if permitted
+        if(Notification.permission === 'granted') {
+          new Notification(data.title || 'פלס"מ לוגיסטיקה', {
+            body: data.msg,
+            icon: '/palsam-logistics/icon-192.png',
+            dir: 'rtl',
+            tag: 'palsam-update'
+          });
+        }
+      }
+    }
+  });
+}
+
+// Notify relevant dept when new task is routed to them
+async function notifyProviderOnTask(task) {
+  if(!window._db) return;
+  var prov = task.prov || task.route || '';
+  if(!prov) return;
+  var fbdoc = window._fbops.doc;
+  var fbset = window._fbops.setDoc;
+  var db = window._db;
+  var provKey = prov.replace(/[^a-zA-Z0-9א-ת]/g,'');
+  try {
+    await fbset(fbdoc(db, 'notifState', 'officer_' + provKey), {
+      title: 'דרישה חדשה',
+      msg: task.title + (task.loc ? ' — ' + task.loc : ''),
+      ts: Date.now()
+    });
+    await fbset(fbdoc(db, 'notifState', 'deputy_' + provKey), {
+      title: 'דרישה חדשה',
+      msg: task.title + (task.loc ? ' — ' + task.loc : ''),
+      ts: Date.now()
+    });
+  } catch(e) { console.warn('notify provider failed', e); }
+}
+
+// Notify submitter when task status changes
+async function notifySubmitterOnStatus(task, newStatus) {
+  if(!window._db || !task.unit) return;
+  var fbdoc = window._fbops.doc;
+  var fbset = window._fbops.setDoc;
+  var db = window._db;
+  var statusHe = newStatus==='prog'?'בביצוע':newStatus==='done'?'הושלם':'עודכן';
+  var unitKey = (task.unit||'').replace(/[^a-zA-Z0-9א-ת]/g,'');
+  try {
+    await fbset(fbdoc(db, 'notifState', 'rasp_' + unitKey), {
+      title: 'עדכון סטטוס',
+      msg: task.title + ' — ' + statusHe,
+      ts: Date.now()
+    });
+  } catch(e) { console.warn('notify submitter failed', e); }
 }
 
 // ═══ LIVE REFRESH ════════════════════════
