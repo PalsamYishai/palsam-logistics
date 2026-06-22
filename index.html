@@ -874,6 +874,7 @@ body{
         <option value="לוגיסטיקה">📦 לוגיסטיקה / אפסנאות</option>
         <option value="מטבח">🍽️ מטבח</option>
         <option value="קשר">📻 קשר</option>
+        <option value="בינוי">🏗️ בינוי</option>
         <option value="נסיעה / הובלה">🚌 נסיעה / הובלה</option>
         <option value="כללי">📋 כללי / לא ברור</option>
       </select>
@@ -904,7 +905,7 @@ body{
       <select class="fs" id="t-route">
         <option value="">— ממתין לניתוב —</option>
         <option>רכב</option><option>טנ״א</option><option>רפואה</option>
-        <option>רבנות</option><option>לוגיסטיקה</option><option>מטבח</option><option>קשר</option>
+        <option>רבנות</option><option>לוגיסטיקה</option><option>מטבח</option><option>קשר</option><option>בינוי</option>
       </select>
     </div>
     <input type="hidden" id="t-edit-id"><button class="btn-login" id="t-save-btn" onclick="saveTask()">שמור דרישה</button>
@@ -1618,7 +1619,8 @@ function deptProv(){
     'רפואה':'רפואה',
     'רבנות':'רבנות',
     'לוגיסטיקה':'לוגיסטיקה',
-    'קשר':'קשר'
+    'קשר':'קשר',
+    'בינוי':'בינוי'
   };
   return map[SESSION.unit]||'';
 }
@@ -1765,6 +1767,14 @@ function autoGroup(){
   persist();renderTasks();
 }
 let pendingGrp=null;
+var deptFilter = 'all';
+function filterByDept(dept, el){
+  deptFilter = dept;
+  document.querySelectorAll('#task-dept-filter .chip').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active');
+  renderTasks();
+}
+
 function grpWith(id){
   if(!pendingGrp){pendingGrp=id;alert('לחץ "אגד" על משימה נוספת לאיגוד איתה');}
   else{const gid='g'+uid();[pendingGrp,id].forEach(i=>{const t=tasks.find(x=>x.id===i);if(t)t.gid=gid;});pendingGrp=null;persist();renderTasks();}
@@ -1826,6 +1836,7 @@ const INV_ACCESS = {
   'רבנות':      ['ציוד'],
   'לוגיסטיקה':  ['ציוד','תחמושת','מזון','דלק','רפואה'],
     'קשר':         ['ציוד'],
+    'בינוי':        ['ציוד'],
 };
 function myInventory(){
   if(canSeeAll()) return inventory;
@@ -2454,6 +2465,7 @@ function myAssignedVeh(){
     'רבנות':       ['פלסמ'],
     'לוגיסטיקה':  ['פלסמ'],
     'קשר':         ['פלסמ'],
+    'בינוי':        ['פלסמ'],
   };
   const allowed = deptMap[SESSION.unit] || [SESSION.unit];
   return vehicles.filter(v=>allowed.includes(v.unit));
