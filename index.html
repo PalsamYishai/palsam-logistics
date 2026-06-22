@@ -1606,7 +1606,7 @@ function myTasks(){
   if(SESSION.unitType==='dept'){
     const dp=deptProv();
     // normalize: strip gershayim for comparison
-    const norm = s => (s||'').replace(/[׳״]/g,'');
+    const norm = s => (s||'').replace(/[׳״"']/g,'').trim();
     return tasks.filter(t=>norm(t.prov)===norm(dp)||norm(t.route)===norm(dp));
   }
   // אג"מ — מ"פ וסמ"פ צפייה, רס"פ הגשה
