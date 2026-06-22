@@ -868,7 +868,7 @@ body{
       <select class="fs" id="t-prov">
         <option value="">בחר קטגוריה...</option>
         <option value="רכב">🚗 רכב</option>
-        <option value="טנ״א">🔧 טנ״א (תיקון שטח / טיפול)</option>
+        <option value="טנא">🔧 טנ"א (תיקון שטח / טיפול)</option>
         <option value="רפואה">⚕️ רפואה</option>
         <option value="רבנות">✡️ רבנות</option>
         <option value="לוגיסטיקה">📦 לוגיסטיקה / אפסנאות</option>
@@ -904,7 +904,7 @@ body{
       <label class="fl" style="color:var(--accent)">⭐ ניתוב לנותן שירות (קמב״ץ בלבד)</label>
       <select class="fs" id="t-route">
         <option value="">— ממתין לניתוב —</option>
-        <option>רכב</option><option>טנ״א</option><option>רפואה</option>
+        <option>רכב</option><option>טנא</option><option>רפואה</option>
         <option>רבנות</option><option>לוגיסטיקה</option><option>מטבח</option><option>קשר</option><option>בינוי</option>
       </select>
     </div>
@@ -1614,7 +1614,7 @@ function myTasks(){
 function deptProv(){
   const map={
     'מחלקת רכב':'רכב',
-    'מחלקת טנא':'טנ״א',
+    'מחלקת טנא':'טנא',
     'מחלקת מטבח':'מטבח',
     'רפואה':'רפואה',
     'רבנות':'רבנות',
@@ -1904,11 +1904,11 @@ function vehRow(v,c){
   </div>`;
 }
 const COMPANY_COLORS = {
-  'פלגה א': { bg:'rgba(74,158,244,0.1)',  border:'rgba(74,158,244,0.35)',  text:'var(--blue)',   label:'א׳' },
-  'פלגה ב': { bg:'rgba(45,212,160,0.1)',  border:'rgba(45,212,160,0.35)',  text:'var(--green)',  label:'ב׳' },
-  'פלגה ג': { bg:'rgba(244,200,66,0.1)',  border:'rgba(244,200,66,0.35)',  text:'var(--yellow)', label:'ג׳' },
-  'פלגה ד': { bg:'rgba(155,110,243,0.1)', border:'rgba(155,110,243,0.35)', text:'var(--purple)', label:'ד׳' },
-  'מפקדה':       { bg:'rgba(232,115,64,0.1)',  border:'rgba(232,115,64,0.35)',  text:'var(--accent)', label:'מפ״' },
+  'פלגה א': { bg:'rgba(74,158,244,0.1)',  border:'rgba(74,158,244,0.35)',  text:'var(--blue)',   label:'א' },
+  'פלגה ב': { bg:'rgba(45,212,160,0.1)',  border:'rgba(45,212,160,0.35)',  text:'var(--green)',  label:'ב' },
+  'פלגה ג': { bg:'rgba(244,200,66,0.1)',  border:'rgba(244,200,66,0.35)',  text:'var(--yellow)', label:'ג' },
+  'פלגה ד': { bg:'rgba(155,110,243,0.1)', border:'rgba(155,110,243,0.35)', text:'var(--purple)', label:'ד' },
+  'מפקדה':       { bg:'rgba(232,115,64,0.1)',  border:'rgba(232,115,64,0.35)',  text:'var(--accent)', label:'מפ' },
   'פלסמ': { bg:'rgba(232,115,64,0.08)', border:'rgba(232,115,64,0.25)', text:'var(--accent)', label:'פלסמ' },
   'רפואה':       { bg:'rgba(244,66,82,0.08)',  border:'rgba(244,66,82,0.25)',   text:'var(--red)',    label:'רפואה' },
 };
@@ -2528,7 +2528,7 @@ function assignedVehCard(v){
     </div>
     ${v.notes?`<div style="margin-top:8px;font-size:11px;color:var(--muted);background:var(--surface2);border-radius:6px;padding:7px">${v.notes}</div>`:''}
     ${canEditVeh()?`<div class="cact" style="margin-top:8px">
-      <button class="btn btn-s btn-xs" onclick="updateKm('${v.id}')">עדכן ק״מ</button>
+      <button class="btn btn-s btn-xs" onclick="updateKm('${v.id}')">עדכן קמ</button>
       <button class="btn btn-s btn-xs" onclick="cycleVeh('${v.id}')">${v.status==='כשיר'?'→ בטיפול':'→ כשיר'}</button>
     </div>`:''}
   </div>`;
@@ -2554,7 +2554,7 @@ function updateKm(id){
 ק״מ נוכחי: ${v.km.toLocaleString()}`);
   if(newKm && !isNaN(newKm) && parseInt(newKm) >= v.km){
     v.km = parseInt(newKm); persist(); renderAssignedVeh(); renderVeh(); refreshDash();
-  } else if(newKm){ alert('ק״מ לא תקין'); }
+  } else if(newKm){ alert('קמ לא תקין'); }
 }
 
 // ═══ MANPOWER ════════════════════════════
