@@ -1605,7 +1605,9 @@ function myTasks(){
   // מחלקות — רואות משימות שנותבו אליהן (לפי prov או route)
   if(SESSION.unitType==='dept'){
     const dp=deptProv();
-    return tasks.filter(t=>t.prov===dp||t.route===dp);
+    // normalize: strip gershayim for comparison
+    const norm = s => (s||'').replace(/[׳״]/g,'');
+    return tasks.filter(t=>norm(t.prov)===norm(dp)||norm(t.route)===norm(dp));
   }
   // אג"מ — מ"פ וסמ"פ צפייה, רס"פ הגשה
   if(SESSION.unitType==='staff') return tasks.filter(t=>t.unit==='אגמ');
