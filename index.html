@@ -1029,7 +1029,7 @@ body{
     <div class="fg"><label class="fl">נושא <span class="req">*</span></label><input class="fi" id="ta-title" placeholder='ימ״ט האמר 3 / תיקון פנצ׳ר / בחינת נשקים...'></div>
     <div class="frow">
       <div class="fg"><label class="fl">סוג</label>
-        <select class="fs" id="ta-type">
+        <select class="fs" id="ta-type" onchange="toggleTanaFields(this)">
           <option value="רכב">🚗 רכב (ימ״ט / פנצ׳ר / מוסך)</option>
           <option value="נשק">🔫 נשק (בחינה / תקלה)</option>
           <option value="אופטיקה">🔭 אופטיקה (כוונות / אמר״ל)</option>
@@ -1041,7 +1041,20 @@ body{
       <div class="fg"><label class="fl">תאריך</label><input class="fi" type="date" id="ta-date"></div>
     </div>
     <div class="frow">
-      <div class="fg"><label class="fl">כלי / פלגה</label><input class="fi" id="ta-unit" placeholder="האמר 2 / פלוגה א׳"></div>
+      <div class="fg"><label class="fl">כלי / פלגה</label><input class="fi" id="ta-unit" placeholder="האמר 2 / פלוגה א"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">מס&#39; סידורי</label><input class="fi" id="ta-serial" placeholder="מס&#39; סידורי נשק / אופטיקה..."></div>
+      <div class="fg" id="ta-mfr-wrap" style="display:none">
+        <label class="fl">חברת רכב</label>
+        <select class="fs" id="ta-mfr">
+          <option value="">בחר...</option>
+          <option>טויוטה</option><option>סיטרואן</option><option>פורד</option>
+          <option>מאזדה</option><option>סוזוקי</option><option>קיה</option>
+          <option>אופל</option><option>סקודה</option><option>פיאט</option>
+          <option>מרצדס</option><option>אחר</option>
+        </select>
+      </div>
       <div class="fg"><label class="fl">סטטוס</label>
         <select class="fs" id="ta-status"><option>מתוכנן</option><option>בביצוע</option><option>הושלם</option><option>דחוי</option></select>
       </div>
@@ -1331,7 +1344,7 @@ const ROLES = {
 // ═══ PERMISSIONS ═════════════════════════
 function canEdit(){
   if(['view'].includes(SESSION.role)) return false;
-  if(SESSION.unitType==='company' && SESSION.role==='smp') return false; // סמ"פ פלגה — צפייה בלבד
+  // סמ"פ פלגה — יכול לערוך (הוסר הגבלת צפייה בלבד)
   if(SESSION.unitType==='palsam' && SESSION.role==='rasp') return false;
   if(SESSION.unitType==='palsam') return true;
   if(SESSION.unitType==='staff' && SESSION.role==='rasp') return false;
@@ -1459,8 +1472,8 @@ function buildNav(){
     setTimeout(()=>{
       const addTaskBtn=document.getElementById('add-task-btn');
       const addTripBtn=document.getElementById('add-trip-btn');
-      // סמ"פ ומ"פ — צפייה בלבד, הסתר כפתורי הגשה
-      const viewOnly = ['smp','mfp'].includes(SESSION.role);
+      // מ"פ בלבד — צפייה בלבד
+      const viewOnly = SESSION.role==='mfp';
       if(addTaskBtn) addTaskBtn.classList.toggle('hidden', viewOnly);
       if(addTripBtn) addTripBtn.classList.toggle('hidden', viewOnly);
     },50);
@@ -2421,11 +2434,19 @@ function saveVeh(){
   persist();renderVeh();renderAssignedVeh();refreshDash();closeM('m-veh');
   document.getElementById('v-edit-id').value='';
 }
+function toggleTanaFields(sel){
+  var mfrWrap = document.getElementById('ta-mfr-wrap');
+  if(mfrWrap) mfrWrap.style.display = sel.value==='רכב' ? 'block' : 'none';
+}
 function saveTana(){
   const title=document.getElementById('ta-title').value.trim();if(!title)return;
   tanaItems.unshift({id:uid(),title,type:document.getElementById('ta-type').value,
-    date:document.getElementById('ta-date').value||today(),unit:document.getElementById('ta-unit').value,
-    status:document.getElementById('ta-status').value,notes:document.getElementById('ta-notes').value});
+    date:document.getElementById('ta-date').value||today(),
+    unit:document.getElementById('ta-unit').value,
+    serial:document.getElementById('ta-serial')?document.getElementById('ta-serial').value:'',
+    mfr:document.getElementById('ta-mfr')?document.getElementById('ta-mfr').value:'',
+    status:document.getElementById('ta-status').value,
+    notes:document.getElementById('ta-notes').value});
   persist();renderTana();closeM('m-tana');
   ['ta-title','ta-unit','ta-notes'].forEach(id=>document.getElementById(id).value='');
 }
